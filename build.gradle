@@ -1,6 +1,6 @@
 plugins {
-    id "com.jfrog.bintray" version "1.1"
-    id "com.github.jruby-gradle.base" version "0.1.5"
+    id "com.jfrog.bintray" version "1.6"
+    id "com.github.jruby-gradle.base" version "1.2.1"
     id "java"
     id "checkstyle"
 }
@@ -21,8 +21,16 @@ targetCompatibility = 1.7
 dependencies {
     compile  "org.embulk:embulk-core:0.8.16"
     provided "org.embulk:embulk-core:0.8.16"
-    // compile "YOUR_JAR_DEPENDENCY_GROUP:YOUR_JAR_DEPENDENCY_MODULE:YOUR_JAR_DEPENDENCY_VERSION"
+
+    compile 'org.apache.hadoop:hadoop-client:2.7.+'
+    compile 'org.apache.parquet:parquet-common:1.8.1'
+    compile 'org.apache.parquet:parquet-encoding:1.8.1'
+    compile 'org.apache.parquet:parquet-column:1.8.1'
+    compile 'org.apache.parquet:parquet-hadoop:1.8.1'
+
     testCompile "junit:junit:4.+"
+    testCompile 'org.embulk:embulk-standards:0.8.15'
+    testCompile 'org.assertj:assertj-core:2.6.+'
 }
 
 task classpath(type: Copy, dependsOn: ["jar"]) {
@@ -51,8 +59,8 @@ task checkstyle(type: Checkstyle) {
 
 task gem(type: JRubyExec, dependsOn: ["gemspec", "classpath"]) {
     jrubyArgs "-rrubygems/gem_runner", "-eGem::GemRunner.new.run(ARGV)", "build"
-    script "${project.name}.gemspec"
-    doLast { ant.move(file: "${project.name}-${project.version}.gem", todir: "pkg") }
+    scriptArgs "${project.projectDir.absolutePath}/build/gemspec"
+    doLast { ant.move(file: "${project.name}-${project.version}.gem", todir: "${project.projectDir}/pkg") }
 }
 
 task gemPush(type: JRubyExec, dependsOn: ["gem"]) {
@@ -80,7 +88,7 @@ Gem::Specification.new do |spec|
   spec.description   = %[Loads records from Parquet Hadoop.]
   spec.email         = ["agawa_koji@cyberagent.co.jp"]
   spec.licenses      = ["MIT"]
-  # TODO set this: spec.homepage      = "https://github.com/agawa_koji/embulk-input-parquet_hadoop"
+  # TODO set this: spec.homepage      = "https://github.com/CyberAgent/adtech-indus-embulk-input-parquet_hadoop"
 
   spec.files         = `git ls-files`.split("\n") + Dir["classpath/*.jar"]
   spec.test_files    = spec.files.grep(%r"^(test|spec)/")
