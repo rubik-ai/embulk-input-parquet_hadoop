@@ -1,4 +1,4 @@
-package org.embulk.input.parquet_hadoop.read.converter;
+package studio.adtech.parquet.msgpack.read.converter;
 
 import org.apache.parquet.io.api.Converter;
 import org.apache.parquet.io.api.GroupConverter;
@@ -441,6 +441,21 @@ public class MessagePackRecordConverter extends GroupConverter {
 
         ArrayConverter(GroupType schema) {
             this.schema = schema;
+        }
+
+        @Override
+        public Converter getConverter(int fieldIndex) {
+            return null;
+        }
+
+        @Override
+        public void start() {
+
+        }
+
+        @Override
+        public void end() {
+
         }
     }
 

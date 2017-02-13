@@ -1,4 +1,4 @@
-package org.embulk.input.parquet_hadoop.read.converter;
+package studio.adtech.parquet.msgpack.read.converter;
 
 /**
  * @author Koji Agawa

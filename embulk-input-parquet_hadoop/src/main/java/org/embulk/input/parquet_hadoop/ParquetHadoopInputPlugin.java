@@ -2,18 +2,16 @@ package org.embulk.input.parquet_hadoop;
 
 import java.io.IOException;
 import java.util.List;
-import com.google.common.base.Optional;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.hadoop.ParquetReader;
 import org.embulk.config.TaskReport;
 import org.embulk.config.Config;
-import org.embulk.config.ConfigDefault;
 import org.embulk.config.ConfigDiff;
 import org.embulk.config.ConfigSource;
 import org.embulk.config.Task;
 import org.embulk.config.TaskSource;
-import org.embulk.input.parquet_hadoop.read.MessagePackReadSupport;
 import org.embulk.spi.Column;
 import org.embulk.spi.DataException;
 import org.embulk.spi.Exec;
@@ -21,9 +19,9 @@ import org.embulk.spi.InputPlugin;
 import org.embulk.spi.PageBuilder;
 import org.embulk.spi.PageOutput;
 import org.embulk.spi.Schema;
-import org.embulk.spi.SchemaConfig;
 import org.embulk.spi.type.Types;
 import org.msgpack.value.Value;
+import studio.adtech.parquet.msgpack.read.MessagePackReadSupport;
 
 public class ParquetHadoopInputPlugin
         implements InputPlugin
