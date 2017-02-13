@@ -3,6 +3,7 @@ package org.embulk.input.parquet_hadoop.read;
 import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
+import org.embulk.input.parquet_hadoop.read.converter.MessagePackRecordConverter;
 import org.msgpack.value.Value;
 
 /**
