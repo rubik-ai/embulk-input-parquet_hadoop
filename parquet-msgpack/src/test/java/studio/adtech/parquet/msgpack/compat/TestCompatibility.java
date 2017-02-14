@@ -1,23 +1,15 @@
 package studio.adtech.parquet.msgpack.compat;
 
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.parquet.hadoop.ParquetReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.msgpack.value.Value;
 import studio.adtech.parquet.msgpack.CSVAsJSONIterator;
 import studio.adtech.parquet.msgpack.CSVColumnWriter;
 import studio.adtech.parquet.msgpack.CSVHeaderMap;
 import studio.adtech.parquet.msgpack.JSONIterator;
-import studio.adtech.parquet.msgpack.JSONIteratorMatcher;
 import studio.adtech.parquet.msgpack.ParquetAsJSONIterator;
-import studio.adtech.parquet.msgpack.read.MessagePackReadSupport;
 
-import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,8 +17,13 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static studio.adtech.parquet.msgpack.JSONIteratorMatcher.sameAs;
 
+/**
+ * Integration tests for compatibility with reference parquet files.
+ *
+ * @see https://github.com/jcrobak/parquet-python/blob/45165f3159505524d708894337e68120fcd844e7/test/test_read_support.py#L109
+ */
 @RunWith(Parameterized.class)
-public class TestParquetReaderCompatibility {
+public class TestCompatibility {
     private final String parquetFilename;
 
     @Parameterized.Parameters
@@ -40,7 +37,7 @@ public class TestParquetReaderCompatibility {
         );
     }
 
-    public TestParquetReaderCompatibility(String parquetFilename) {
+    public TestCompatibility(String parquetFilename) {
         this.parquetFilename = parquetFilename;
     }
 
