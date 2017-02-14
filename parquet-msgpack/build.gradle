@@ -26,5 +26,6 @@ dependencies {
 
     testCompile "junit:junit:4.+"
     testCompile 'org.assertj:assertj-core:2.6.+'
-    testCompile 'org.msgpack:jackson-dataformat-msgpack:0.8.11'
+    testCompile 'org.apache.commons:commons-csv:1.4'
+    testCompile 'org.skyscreamer:jsonassert:1.4.0'
 }
