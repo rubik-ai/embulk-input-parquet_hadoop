@@ -13,7 +13,7 @@ import studio.adtech.parquet.msgpack.ParquetAsJSONIterator;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static studio.adtech.parquet.msgpack.JSONIteratorMatcher.sameAs;
 
@@ -23,7 +23,7 @@ import static studio.adtech.parquet.msgpack.JSONIteratorMatcher.sameAs;
  * @see https://github.com/jcrobak/parquet-python/blob/45165f3159505524d708894337e68120fcd844e7/test/test_read_support.py#L109
  */
 @RunWith(Parameterized.class)
-public class TestCompatibility {
+public class TestParquetCompatibility {
     private final String parquetFilename;
 
     @Parameterized.Parameters
@@ -37,7 +37,7 @@ public class TestCompatibility {
         );
     }
 
-    public TestCompatibility(String parquetFilename) {
+    public TestParquetCompatibility(String parquetFilename) {
         this.parquetFilename = parquetFilename;
     }
 

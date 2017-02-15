@@ -10,7 +10,7 @@ import studio.adtech.parquet.msgpack.ParquetAsJSONIterator;
  *
  * @see https://github.com/jcrobak/parquet-python/blob/45165f3159505524d708894337e68120fcd844e7/test/test_read_support.py#L207
  */
-public class TestDefinitionLevel {
+public class TestParquetPythonDefinitionLevel {
     @Test
     public void testReadingAFileThatContainsNullRecords() throws Exception {
         JSONIterator parquet = ParquetAsJSONIterator.fromResource(

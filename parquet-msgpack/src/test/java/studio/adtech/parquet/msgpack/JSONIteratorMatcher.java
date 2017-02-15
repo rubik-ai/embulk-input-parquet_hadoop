@@ -3,7 +3,6 @@ package studio.adtech.parquet.msgpack;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -36,10 +35,12 @@ public class JSONIteratorMatcher extends TypeSafeDiagnosingMatcher<JSONIterator>
                 try {
                     JSONCompareResult r = JSONCompare.compareJSON(left, right, JSONCompareMode.STRICT_ORDER);
                     if (r.failed()) {
+                        mismatchDescription.appendText("at line " + line + ": ");
                         mismatchDescription.appendText(r.getMessage());
                         return false;
                     }
                 } catch (JSONException e) {
+                    mismatchDescription.appendText("at line " + line + ": ");
                     mismatchDescription.appendText(e.toString());
                     throw new AssertionError(e);
                 }
@@ -47,6 +48,12 @@ public class JSONIteratorMatcher extends TypeSafeDiagnosingMatcher<JSONIterator>
                 return true;
             } else {
                 // left or right has extra line
+                mismatchDescription.appendText("at line " + line + ": ");
+                if (hasLeft) {
+                    mismatchDescription.appendText("expected has extra lines");
+                } else {
+                    mismatchDescription.appendText("actual has extra lines");
+                }
                 return false;
             }
 
