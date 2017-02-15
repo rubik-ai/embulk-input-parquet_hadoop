@@ -1,5 +1,6 @@
 package studio.adtech.parquet.msgpack.read.converter;
 
+import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.Converter;
 import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.schema.GroupType;
@@ -9,6 +10,8 @@ import org.apache.parquet.schema.Type;
 import org.msgpack.value.Value;
 import org.msgpack.value.ValueFactory;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,7 @@ public class MessagePackRecordConverter extends GroupConverter {
 
     // TODO: configurable
     private boolean assumeBinaryIsString = false;
+    private boolean assumeInt96IsTimestamp = true;
 
     public MessagePackRecordConverter(GroupType schema, ParentContainerUpdater updater) {
         this.updater = updater;
@@ -166,8 +170,27 @@ public class MessagePackRecordConverter extends GroupConverter {
                 }
 
             case INT96:
-                // TODO: Timestamp
-                throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
+                // TODO: document assumeInt96IsTimestamp
+                checkConversionRequirement(
+                        assumeInt96IsTimestamp,
+                        "INT96 is not supported unless it's interpreted as timestamp. " +
+                                "Please try to set assumeInt96IsTimestamp to true.");
+                return new ParquetPrimitiveConverter(updater) {
+                    @Override
+                    public void addBinary(Binary value) {
+                        if (value.length() != 12) {
+                            throw new AssertionError(
+                                    "Timestamps (with nanoseconds) are expected to be stored in 12-byte long binaries, " +
+                                    "but got a " + String.valueOf(value.length()) + "-byte binary.");
+                        }
+
+                        ByteBuffer buf = value.toByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
+                        long timeOfDayNanos = buf.getLong();
+                        int julianDays = buf.getInt();
+
+                        updater.setLong(DateTimeUtils.fromJulianDay(julianDays, timeOfDayNanos));
+                    }
+                };
 
             case BINARY:
                 if (originalType == null) {
@@ -499,8 +522,7 @@ public class MessagePackRecordConverter extends GroupConverter {
 
     private static void checkConversionRequirement(boolean condition, String message, Object... args) {
         if (!condition) {
-            // TODO: exception class
-            throw new RuntimeException(String.format(message, args));
+            throw new ParquetSchemaException(String.format(message, args));
         }
     }
 }
