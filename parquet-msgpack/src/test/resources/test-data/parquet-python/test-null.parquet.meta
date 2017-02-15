@@ -1,0 +1,13 @@
+file:        file:test-null.parquet
+creator:     parquet-mr version 1.8.1-drill-r0 (build 6b605a4ea05b66e1a6bf843353abcb4834a4ced8)
+extra:       drill.version = 1.7.0
+
+file schema: root
+--------------------------------------------------------------------------------
+foo:         OPTIONAL INT32 R:0 D:1
+bar:         OPTIONAL INT32 R:0 D:1
+
+row group 1: RC:2 TS:90 OFFSET:4
+--------------------------------------------------------------------------------
+foo:          INT32 SNAPPY DO:0 FPO:4 SZ:49/47/0.96 VC:2 ENC:RLE,PLAIN,BIT_PACKED
+bar:          INT32 SNAPPY DO:0 FPO:53 SZ:45/43/0.96 VC:2 ENC:RLE,PLAIN,BIT_PACKED
