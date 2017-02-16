@@ -34,7 +34,8 @@ class ParquetMapConverter extends MessagePackRecordConverter {
 
     @Override
     public void end() {
-        updater.set(ValueFactory.newMap(kvs.toArray(new Value[kvs.size()])));
+        Value mapValue = ValueFactory.newMap(kvs.toArray(new Value[kvs.size()]));
+        updater.set(mapValue);
     }
 
     private final class KeyValueConverter extends GroupConverter {

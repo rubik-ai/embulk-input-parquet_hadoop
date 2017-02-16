@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author Koji Agawa
  */
-public class MessagePackRecordConverter extends GroupConverter {
+public class MessagePackRecordConverter extends GroupConverter implements HasParentContainerUpdater {
     protected final ParentContainerUpdater updater;
     // implements HasParentContainerUpdater
     private final Converter[] converters;
@@ -93,6 +93,11 @@ public class MessagePackRecordConverter extends GroupConverter {
         updater.set(currentMap.build());
     }
 
+    @Override
+    public ParentContainerUpdater getUpdater() {
+        return updater;
+    }
+
     protected Converter newConverter(Type parquetType, ParentContainerUpdater updater) {
         return convertField(parquetType, updater);
     }
@@ -101,7 +106,7 @@ public class MessagePackRecordConverter extends GroupConverter {
         if (field.isPrimitive()) {
             return convertPrimitiveField(field.asPrimitiveType(), updater);
         } else {
-            return convertGroupField(field.asGroupType());
+            return convertGroupField(field.asGroupType(), updater);
         }
     }
 
@@ -231,7 +236,7 @@ public class MessagePackRecordConverter extends GroupConverter {
         }
     }
 
-    private Converter convertGroupField(GroupType field) {
+    private Converter convertGroupField(GroupType field, final ParentContainerUpdater updater) {
         OriginalType originalType = field.getOriginalType();
         if (originalType == null) {
             return new MessagePackRecordConverter(field, new ParentContainerUpdater.Default() {
@@ -274,9 +279,9 @@ public class MessagePackRecordConverter extends GroupConverter {
                 if (isElementType(repeatedType, field.getName())) {
                     return new ParquetArrayConverter.A(repeatedType.asGroupType(), arrayUpdater);
                 } else {
-                    Type elementType = repeatedType.asGroupType().getType(0);
+                    //Type elementType = repeatedType.asGroupType().getType(0);
                     //boolean optional = elementType.isRepetition(Type.Repetition.OPTIONAL);
-                    return new ParquetArrayConverter.B(elementType.asGroupType(), arrayUpdater);
+                    return new ParquetArrayConverter.B(repeatedType.asGroupType(), arrayUpdater);
                 }
 
             case MAP:
@@ -353,7 +358,6 @@ public class MessagePackRecordConverter extends GroupConverter {
                 (parentName + "_tuple").equals(repeatedType.getName())
         );
     }
-
 
     private static class InternalMap {
         private final int numFields;
