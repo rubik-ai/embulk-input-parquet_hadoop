@@ -1,8 +1,10 @@
 package studio.adtech.parquet.msgpack.read.converter;
 
+import org.apache.parquet.column.Dictionary;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.Converter;
 import org.apache.parquet.io.api.GroupConverter;
+import org.apache.parquet.io.api.PrimitiveConverter;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.OriginalType;
 import org.apache.parquet.schema.PrimitiveType;
@@ -41,24 +43,7 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         int i = 0;
         for (Type field : schema.getFields()) {
             InternalMapUpdater update = new InternalMapUpdater(currentMap, i);
-            Converter converter;
-            switch (field.getRepetition()) {
-                case OPTIONAL:
-                    //
-                    converter = newConverter(field, update);
-                    break;
-                case REQUIRED:
-                    converter = newConverter(field, update);
-                    break;
-                case REPEATED:
-                    // TODO: array type
-                    converter = newConverter(field, update);
-                    break;
-                default:
-                    // TODO:
-                    throw new ParquetSchemaException("");
-            }
-            fieldConverters[i++] = converter;
+            fieldConverters[i++] = newFieldConverter(field, update);
         }
     }
 
@@ -94,19 +79,30 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         return updater;
     }
 
-    protected Converter newConverter(Type parquetType, ParentContainerUpdater updater) {
-        return convertField(parquetType, updater);
-    }
-
-    private Converter convertField(Type field, ParentContainerUpdater updater) {
-        if (field.isPrimitive()) {
-            return convertPrimitiveField(field.asPrimitiveType(), updater);
+    private Converter newFieldConverter(Type parquetType, ParentContainerUpdater updater) {
+        if (parquetType.isRepetition(Type.Repetition.REPEATED) && parquetType.getOriginalType() != OriginalType.LIST) {
+            // A repeated field that is neither contained by a `LIST`- or `MAP`-annotated group nor
+            // annotated by `LIST` or `MAP` should be interpreted as a required list of required
+            // elements where the element type is the type of the field.
+            if (parquetType.isPrimitive()) {
+                return new RepeatedPrimitiveConverter(parquetType, updater);
+            } else {
+                return new RepeatedGroupConverter(parquetType, updater);
+            }
         } else {
-            return convertGroupField(field.asGroupType(), updater);
+            return newConverter(parquetType, updater);
         }
     }
 
-    private Converter convertPrimitiveField(PrimitiveType field, final ParentContainerUpdater updater) {
+    private Converter newConverter(Type parquetType, ParentContainerUpdater updater) {
+        if (parquetType.isPrimitive()) {
+            return newConverterForPrimitiveField(parquetType.asPrimitiveType(), updater);
+        } else {
+            return newConverterForGroupField(parquetType.asGroupType(), updater);
+        }
+    }
+
+    private Converter newConverterForPrimitiveField(PrimitiveType field, final ParentContainerUpdater updater) {
         PrimitiveType.PrimitiveTypeName typeName = field.getPrimitiveTypeName();
         OriginalType originalType = field.getOriginalType();
         String typeString = (originalType == null ? String.valueOf(typeName) : String.format("%s (%s)", typeName, originalType));
@@ -236,7 +232,7 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         }
     }
 
-    private Converter convertGroupField(GroupType field, final ParentContainerUpdater updater) {
+    private Converter newConverterForGroupField(GroupType field, final ParentContainerUpdater updater) {
         OriginalType originalType = field.getOriginalType();
         if (originalType == null) {
             return new ParquetValueConverter(field, new ParentContainerUpdater.Noop() {
@@ -245,9 +241,7 @@ public class ParquetValueConverter extends ParquetGroupConverter {
                     updater.set(value);
                 }
             });
-        }
-
-        switch (originalType) {
+        } else switch (originalType) {
             // A Parquet list is represented as a 3-level structure:
             //
             //   <list-repetition> group <name> (LIST) {
@@ -297,7 +291,6 @@ public class ParquetValueConverter extends ParquetGroupConverter {
 
     }
 
-
     private static boolean isElementType(Type repeatedType, String parentName) {
         return (
                 // For legacy 2-level list types with primitive element type, e.g.:
@@ -344,6 +337,12 @@ public class ParquetValueConverter extends ParquetGroupConverter {
                 //
                 (parentName + "_tuple").equals(repeatedType.getName())
         );
+    }
+
+    private static void checkConversionRequirement(boolean condition, String message, Object... args) {
+        if (!condition) {
+            throw new ParquetSchemaException(String.format(message, args));
+        }
     }
 
     /**
@@ -423,13 +422,6 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         @Override
         public void setDouble(double value) {
             map.set(index, ValueFactory.newFloat(value));
-        }
-    }
-
-
-    private static void checkConversionRequirement(boolean condition, String message, Object... args) {
-        if (!condition) {
-            throw new ParquetSchemaException(String.format(message, args));
         }
     }
 
@@ -592,6 +584,138 @@ public class ParquetValueConverter extends ParquetGroupConverter {
                 ParquetMapConverter.this.kvs.add(currentKey);
                 ParquetMapConverter.this.kvs.add(currentValue);
             }
+        }
+    }
+
+    /**
+     * A primitive converter for converting unannotated repeated primitive values to required arrays
+     * of required primitives values.
+     */
+    private class RepeatedPrimitiveConverter extends PrimitiveConverter implements HasParentContainerUpdater {
+        private final ParentContainerUpdater updater;
+        private final PrimitiveConverter elementConverter;
+        private ArrayList<Value> currentArray;
+
+        public RepeatedPrimitiveConverter(Type parquetType, final ParentContainerUpdater parentUpdater) {
+            this.updater = new ParentContainerUpdater.Noop() {
+                @Override
+                public void start() {
+                    RepeatedPrimitiveConverter.this.currentArray = new ArrayList<>();
+                }
+
+                @Override
+                public void end() {
+                    parentUpdater.set(ValueFactory.newArray(RepeatedPrimitiveConverter.this.currentArray));
+                }
+
+                @Override
+                public void set(Value value) {
+                    RepeatedPrimitiveConverter.this.currentArray.add(value);
+                }
+            };
+
+            this.elementConverter = newConverter(parquetType, getUpdater()).asPrimitiveConverter();
+        }
+
+        @Override
+        public ParentContainerUpdater getUpdater() {
+            return updater;
+        }
+
+        @Override
+        public boolean hasDictionarySupport() {
+            return elementConverter.hasDictionarySupport();
+        }
+
+        @Override
+        public void setDictionary(Dictionary dictionary) {
+            elementConverter.setDictionary(dictionary);
+        }
+
+        @Override
+        public void addValueFromDictionary(int dictionaryId) {
+            elementConverter.addValueFromDictionary(dictionaryId);
+        }
+
+        @Override
+        public void addBinary(Binary value) {
+            elementConverter.addBinary(value);
+        }
+
+        @Override
+        public void addBoolean(boolean value) {
+            elementConverter.addBoolean(value);
+        }
+
+        @Override
+        public void addDouble(double value) {
+            elementConverter.addDouble(value);
+        }
+
+        @Override
+        public void addFloat(float value) {
+            elementConverter.addFloat(value);
+        }
+
+        @Override
+        public void addInt(int value) {
+            elementConverter.addInt(value);
+        }
+
+        @Override
+        public void addLong(long value) {
+            elementConverter.addLong(value);
+        }
+    }
+
+    /**
+     * A group converter for converting unannotated repeated group values to required arrays of
+     * required struct values.
+     */
+    private class RepeatedGroupConverter extends GroupConverter implements HasParentContainerUpdater {
+        private final ParentContainerUpdater updater;
+        private final GroupConverter elementConverter;
+        private ArrayList<Value> currentArray;
+
+        public RepeatedGroupConverter(Type parquetType, final ParentContainerUpdater parentUpdater) {
+            this.updater = new ParentContainerUpdater.Noop() {
+                @Override
+                public void start() {
+                    RepeatedGroupConverter.this.currentArray = new ArrayList<>();
+                }
+
+                @Override
+                public void end() {
+                    parentUpdater.set(ValueFactory.newArray(RepeatedGroupConverter.this.currentArray));
+                }
+
+                @Override
+                public void set(Value value) {
+                    RepeatedGroupConverter.this.currentArray.add(value);
+                }
+            };
+
+            this.elementConverter = newConverter(parquetType, getUpdater()).asGroupConverter();
+        }
+
+        @Override
+        public ParentContainerUpdater getUpdater() {
+            return updater;
+        }
+
+        @Override
+        public Converter getConverter(int fieldIndex) {
+            return elementConverter.getConverter(fieldIndex);
+        }
+
+        @Override
+        public void start() {
+            elementConverter.start();
+        }
+
+        @Override
+        public void end() {
+            elementConverter.end();
         }
     }
 }

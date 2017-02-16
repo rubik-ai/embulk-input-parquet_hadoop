@@ -73,7 +73,7 @@ public class TestSparkParquet extends SparkTestBase {
                 )
                 .withData(
                         RowFactory.create("foo", new byte[] { 0x20 }, true, new java.sql.Date(0), new java.sql.Timestamp(1), 1.5d, 2.5f, (byte)3, 4, 5L, (short)6),
-                        RowFactory.create(new Object[] { null, null, null, null, null, null, null, null, null, null, null })
+                        RowFactory.create(null, null, null, null, null, null, null, null, null, null, null)
                 )
                 .read();
 
@@ -125,7 +125,7 @@ public class TestSparkParquet extends SparkTestBase {
                 )
                 .withData(
                         RowFactory.create(new BigDecimal("1.333"), new BigDecimal("1.333"), new BigDecimal("1.333")),
-                        RowFactory.create(new Object[] { null, null, null })
+                        RowFactory.create(null, null, null)
                 )
                 .read();
 
