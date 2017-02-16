@@ -33,7 +33,7 @@ public class JSONIteratorMatcher extends TypeSafeDiagnosingMatcher<JSONIterator>
                 String right = itRight.next();
 
                 try {
-                    JSONCompareResult r = JSONCompare.compareJSON(left, right, JSONCompareMode.STRICT_ORDER);
+                    JSONCompareResult r = JSONCompare.compareJSON(left, right, JSONCompareMode.STRICT);
                     if (r.failed()) {
                         mismatchDescription.appendText("at line " + line + ": ");
                         mismatchDescription.appendText(r.getMessage());

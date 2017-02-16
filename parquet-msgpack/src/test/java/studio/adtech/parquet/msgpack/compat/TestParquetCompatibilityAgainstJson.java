@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 import static studio.adtech.parquet.msgpack.JSONIteratorMatcher.sameAs;
 
 @RunWith(Parameterized.class)
-public class TestParquetCppCompatibility {
+public class TestParquetCompatibilityAgainstJson {
     private final String parquetFilename;
 
     @Parameterized.Parameters
@@ -24,11 +24,25 @@ public class TestParquetCppCompatibility {
                 "test-data/parquet-cpp/alltypes_plain.parquet",
                 "test-data/parquet-cpp/alltypes_plain.snappy.parquet",
                 "test-data/parquet-cpp/alltypes_dictionary.parquet",
-                "test-data/parquet-cpp/nation.dict-malformed.parquet"
+                "test-data/parquet-cpp/nation.dict-malformed.parquet",
+
+                // unannotated array of primitive type
+                "test-data/spark/old-repeated-int.parquet",
+
+                // unannotated array of struct
+                "test-data/spark/old-repeated-message.parquet",
+                "test-data/spark/proto-repeated-struct.parquet",
+                "test-data/spark/proto-struct-with-array-many.parquet",
+
+                // struct with unannotated array
+                "test-data/spark/proto-struct-with-array.parquet",
+
+                // unannotated array of string
+                "test-data/spark/proto-repeated-string.parquet"
         );
     }
 
-    public TestParquetCppCompatibility(String parquetFilename) {
+    public TestParquetCompatibilityAgainstJson(String parquetFilename) {
         this.parquetFilename = parquetFilename;
     }
 

@@ -1,0 +1,12 @@
+file:        file:/Users/a13400/Projects/acd/adtech-indus-embulk-input-parquet_hadoop/parquet-msgpack/src/test/resources/test-data/spark/proto-repeated-string.parquet
+creator:     parquet-mr
+extra:       parquet.proto.descriptor = name: "StringArray" field { name: "myString" number: 1 label: LABEL_REPEATED type: TYPE_STRING }
+extra:       parquet.proto.class = parquet.proto.test.TestProtobuf$StringArray
+
+file schema: TestProtobuf.StringArray
+--------------------------------------------------------------------------------
+myString:    REPEATED BINARY O:UTF8 R:1 D:1
+
+row group 1: RC:3 TS:87 OFFSET:4
+-------------------------------------------------------------------------------
+myString:     BINARY UNCOMPRESSED DO:0 FPO:4 SZ:87/87/1.00 VC:7 ENC:PLAIN,RLE
