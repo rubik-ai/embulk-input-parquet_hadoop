@@ -28,4 +28,6 @@ dependencies {
     testCompile 'org.assertj:assertj-core:2.6.+'
     testCompile 'org.apache.commons:commons-csv:1.4'
     testCompile 'org.skyscreamer:jsonassert:1.4.0'
+    testCompile 'org.apache.spark:spark-core_2.11:2.1.0'
+    testCompile 'org.apache.spark:spark-sql_2.11:2.1.0'
 }
