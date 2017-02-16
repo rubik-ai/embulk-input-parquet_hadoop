@@ -1,1 +1,3 @@
 rootProject.name = 'embulk-input-parquet_hadoop'
+include 'embulk-input-parquet_hadoop'
+include 'parquet-msgpack'

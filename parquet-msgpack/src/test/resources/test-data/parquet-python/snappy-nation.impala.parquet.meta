@@ -1,0 +1,16 @@
+file:        file:snappy-nation.impala.parquet
+creator:     impala version 1.2-INTERNAL (build a462ec42e550c75fccbff98c720f37f3ee9d55a3)
+
+file schema: schema
+--------------------------------------------------------------------------------
+n_nationkey: OPTIONAL INT32 R:0 D:1
+n_name:      OPTIONAL BINARY R:0 D:1
+n_regionkey: OPTIONAL INT32 R:0 D:1
+n_comment:   OPTIONAL BINARY R:0 D:1
+
+row group 1: RC:25 TS:1665 OFFSET:4
+--------------------------------------------------------------------------------
+n_nationkey:  INT32 SNAPPY DO:0 FPO:4 SZ:125/125/1.00 VC:25 ENC:PLAIN,RLE
+n_name:       BINARY SNAPPY DO:167 FPO:430 SZ:306/333/1.09 VC:25 ENC:PLAIN,RLE,PLAIN_DICTIONARY
+n_regionkey:  INT32 SNAPPY DO:0 FPO:511 SZ:79/124/1.57 VC:25 ENC:PLAIN,RLE
+n_comment:    BINARY SNAPPY DO:629 FPO:1741 SZ:1155/2013/1.74 VC:25 ENC:PLAIN,RLE,PLAIN_DICTIONARY

@@ -1,0 +1,16 @@
+file:        file:gzip-nation.impala.parquet
+creator:     impala version 1.2-INTERNAL (build a462ec42e550c75fccbff98c720f37f3ee9d55a3)
+
+file schema: schema
+--------------------------------------------------------------------------------
+n_nationkey: OPTIONAL INT32 R:0 D:1
+n_name:      OPTIONAL BINARY R:0 D:1
+n_regionkey: OPTIONAL INT32 R:0 D:1
+n_comment:   OPTIONAL BINARY R:0 D:1
+
+row group 1: RC:25 TS:1247 OFFSET:4
+--------------------------------------------------------------------------------
+n_nationkey:  INT32 GZIP DO:0 FPO:4 SZ:85/125/1.47 VC:25 ENC:PLAIN,RLE
+n_name:       BINARY GZIP DO:127 FPO:330 SZ:264/333/1.26 VC:25 ENC:PLAIN,PLAIN_DICTIONARY,RLE
+n_regionkey:  INT32 GZIP DO:0 FPO:429 SZ:74/124/1.68 VC:25 ENC:PLAIN,RLE
+n_comment:    BINARY GZIP DO:542 FPO:1305 SZ:824/2013/2.44 VC:25 ENC:PLAIN,PLAIN_DICTIONARY,RLE

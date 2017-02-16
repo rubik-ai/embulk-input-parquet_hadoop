@@ -1,0 +1,18 @@
+file:        file:proto-struct-with-array-many.parquet
+creator:     parquet-mr
+extra:       parquet.proto.descriptor = name: "TopMessage" field { name: "inner" number: 1 label: LABEL_REPEATED type: TYPE_MESSAGE type_name: ".TestProtobuf.InnerMessage" }
+extra:       parquet.proto.class = parquet.proto.test.TestProtobuf$TopMessage
+
+file schema: TestProtobuf.TopMessage
+--------------------------------------------------------------------------------
+inner:       REPEATED F:3
+.one:        OPTIONAL BINARY O:UTF8 R:1 D:2
+.two:        OPTIONAL BINARY O:UTF8 R:1 D:2
+.three:      OPTIONAL BINARY O:UTF8 R:1 D:2
+
+row group 1: RC:3 TS:330 OFFSET:4
+--------------------------------------------------------------------------------
+inner:
+.one:         BINARY UNCOMPRESSED DO:0 FPO:4 SZ:110/110/1.00 VC:6 ENC:RLE,PLAIN
+.two:         BINARY UNCOMPRESSED DO:0 FPO:114 SZ:110/110/1.00 VC:6 ENC:RLE,PLAIN
+.three:       BINARY UNCOMPRESSED DO:0 FPO:224 SZ:110/110/1.00 VC:6 ENC:RLE,PLAIN

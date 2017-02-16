@@ -1,0 +1,16 @@
+file:        file:nation.impala.parquet
+creator:     impala version 1.2-INTERNAL (build a462ec42e550c75fccbff98c720f37f3ee9d55a3)
+
+file schema: schema
+--------------------------------------------------------------------------------
+n_nationkey: OPTIONAL INT32 R:0 D:1
+n_name:      OPTIONAL BINARY R:0 D:1
+n_regionkey: OPTIONAL INT32 R:0 D:1
+n_comment:   OPTIONAL BINARY R:0 D:1
+
+row group 1: RC:25 TS:2596 OFFSET:4
+--------------------------------------------------------------------------------
+n_nationkey:  INT32 UNCOMPRESSED DO:0 FPO:4 SZ:125/125/1.00 VC:25 ENC:PLAIN,RLE
+n_name:       BINARY UNCOMPRESSED DO:167 FPO:459 SZ:333/333/1.00 VC:25 ENC:PLAIN,RLE,PLAIN_DICTIONARY
+n_regionkey:  INT32 UNCOMPRESSED DO:0 FPO:538 SZ:125/125/1.00 VC:25 ENC:PLAIN,RLE
+n_comment:    BINARY UNCOMPRESSED DO:702 FPO:2674 SZ:2013/2013/1.00 VC:25 ENC:PLAIN,RLE,PLAIN_DICTIONARY

@@ -1,0 +1,30 @@
+file:            file:alltypes_plain.parquet
+creator:         impala version 1.3.0-INTERNAL (build 8a48ddb1eff84592b3fc06bc6f51ec120e1fffc9)
+
+file schema:     schema
+--------------------------------------------------------------------------------
+id:              OPTIONAL INT32 R:0 D:1
+bool_col:        OPTIONAL BOOLEAN R:0 D:1
+tinyint_col:     OPTIONAL INT32 R:0 D:1
+smallint_col:    OPTIONAL INT32 R:0 D:1
+int_col:         OPTIONAL INT32 R:0 D:1
+bigint_col:      OPTIONAL INT64 R:0 D:1
+float_col:       OPTIONAL FLOAT R:0 D:1
+double_col:      OPTIONAL DOUBLE R:0 D:1
+date_string_col: OPTIONAL BINARY R:0 D:1
+string_col:      OPTIONAL BINARY R:0 D:1
+timestamp_col:   OPTIONAL INT96 R:0 D:1
+
+row group 1:     RC:8 TS:671 OFFSET:4
+--------------------------------------------------------------------------------
+id:               INT32 UNCOMPRESSED DO:4 FPO:49 SZ:73/73/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+bool_col:         BOOLEAN UNCOMPRESSED DO:0 FPO:109 SZ:24/24/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+tinyint_col:      INT32 UNCOMPRESSED DO:168 FPO:189 SZ:47/47/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+smallint_col:     INT32 UNCOMPRESSED DO:256 FPO:277 SZ:47/47/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+int_col:          INT32 UNCOMPRESSED DO:345 FPO:366 SZ:47/47/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+bigint_col:       INT64 UNCOMPRESSED DO:429 FPO:458 SZ:55/55/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+float_col:        FLOAT UNCOMPRESSED DO:524 FPO:545 SZ:47/47/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+double_col:       DOUBLE UNCOMPRESSED DO:610 FPO:639 SZ:55/55/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+date_string_col:  BINARY UNCOMPRESSED DO:705 FPO:766 SZ:88/88/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+string_col:       BINARY UNCOMPRESSED DO:840 FPO:863 SZ:49/49/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE
+timestamp_col:    INT96 UNCOMPRESSED DO:929 FPO:1040 SZ:139/139/1.00 VC:8 ENC:PLAIN_DICTIONARY,PLAIN,RLE

@@ -1,0 +1,18 @@
+file:        file:old-repeated-message.parquet
+creator:     parquet-mr
+extra:       parquet.proto.descriptor = name: "TopMessage" field { name: "inner" number: 1 label: LABEL_REPEATED type: TYPE_MESSAGE type_name: ".TestProtobuf.InnerMessage" }
+extra:       parquet.proto.class = parquet.proto.test.TestProtobuf$TopMessage
+
+file schema: TestProtobuf.TopMessage
+--------------------------------------------------------------------------------
+inner:       REPEATED F:3
+.one:        OPTIONAL BINARY O:UTF8 R:1 D:2
+.two:        OPTIONAL BINARY O:UTF8 R:1 D:2
+.three:      OPTIONAL BINARY O:UTF8 R:1 D:2
+
+row group 1: RC:1 TS:136 OFFSET:4
+--------------------------------------------------------------------------------
+inner:
+.one:         BINARY UNCOMPRESSED DO:0 FPO:4 SZ:45/45/1.00 VC:3 ENC:RLE,PLAIN
+.two:         BINARY UNCOMPRESSED DO:0 FPO:49 SZ:46/46/1.00 VC:3 ENC:RLE,PLAIN
+.three:       BINARY UNCOMPRESSED DO:0 FPO:95 SZ:45/45/1.00 VC:3 ENC:RLE,PLAIN

@@ -1,0 +1,12 @@
+file:        file:old-repeated-int.parquet
+creator:     parquet-mr
+extra:       parquet.proto.descriptor = name: "RepeatedIntMessage" field { name: "repeatedInt" number: 1 label: LABEL_REPEATED type: TYPE_INT32 }
+extra:       parquet.proto.class = parquet.proto.test.TestProtobuf$RepeatedIntMessage
+
+file schema: TestProtobuf.RepeatedIntMessage
+--------------------------------------------------------------------------------
+repeatedInt: REPEATED INT32 R:1 D:1
+
+row group 1: RC:1 TS:41 OFFSET:4
+-------------------------------------------------------------------------------
+repeatedInt:  INT32 UNCOMPRESSED DO:0 FPO:4 SZ:41/41/1.00 VC:3 ENC:RLE,PLAIN

@@ -1,0 +1,28 @@
+file:              file:proto-struct-with-array.parquet
+creator:           parquet-mr
+extra:             parquet.proto.descriptor = name: "SchemaConverterRepetition" field { name: "optionalPrimitive" number: 1 label: LABEL_OPTIONAL type: TYPE_INT32 } field { name: "requiredPrimitive" number: 2 label: LABEL_REQUIRED type: TYPE_INT32 } field { name: "repeatedPrimitive" number: 3 label: LABEL_REPEATED type: TYPE_INT32 } field { name: "optionalMessage" number: 7 label: LABEL_OPTIONAL type: TYPE_MESSAGE type_name: ".TestProtobuf.SchemaConverterSimpleMessage" } field { name: "requiredMessage" number: 8 label: LABEL_REQUIRED type: TYPE_MESSAGE type_name: ".TestProtobuf.SchemaConverterSimpleMessage" } field { name: "repeatedMessage" number: 9 label: LABEL_REPEATED type: TYPE_MESSAGE type_name: ".TestProtobuf.SchemaConverterSimpleMessage" }
+extra:             parquet.proto.class = parquet.proto.test.TestProtobuf$SchemaConverterRepetition
+
+file schema:       TestProtobuf.SchemaConverterRepetition
+--------------------------------------------------------------------------------
+optionalPrimitive: OPTIONAL INT32 R:0 D:1
+requiredPrimitive: REQUIRED INT32 R:0 D:0
+repeatedPrimitive: REPEATED INT32 R:1 D:1
+optionalMessage:   OPTIONAL F:1
+.someId:           OPTIONAL INT32 R:0 D:2
+requiredMessage:   REQUIRED F:1
+.someId:           OPTIONAL INT32 R:0 D:1
+repeatedMessage:   REPEATED F:1
+.someId:           OPTIONAL INT32 R:1 D:2
+
+row group 1:       RC:1 TS:166 OFFSET:4
+--------------------------------------------------------------------------------
+optionalPrimitive:  INT32 UNCOMPRESSED DO:0 FPO:4 SZ:27/27/1.00 VC:1 ENC:BIT_PACKED,PLAIN,RLE
+requiredPrimitive:  INT32 UNCOMPRESSED DO:0 FPO:31 SZ:21/21/1.00 VC:1 ENC:BIT_PACKED,PLAIN
+repeatedPrimitive:  INT32 UNCOMPRESSED DO:0 FPO:52 SZ:29/29/1.00 VC:1 ENC:PLAIN,RLE
+optionalMessage:
+.someId:            INT32 UNCOMPRESSED DO:0 FPO:81 SZ:24/24/1.00 VC:1 ENC:BIT_PACKED,PLAIN,RLE
+requiredMessage:
+.someId:            INT32 UNCOMPRESSED DO:0 FPO:105 SZ:27/27/1.00 VC:1 ENC:BIT_PACKED,PLAIN,RLE
+repeatedMessage:
+.someId:            INT32 UNCOMPRESSED DO:0 FPO:132 SZ:38/38/1.00 VC:2 ENC:PLAIN,RLE

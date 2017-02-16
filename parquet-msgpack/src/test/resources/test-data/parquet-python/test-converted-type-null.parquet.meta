@@ -1,0 +1,11 @@
+file:        file:test-converted-type-null.parquet
+creator:     parquet-mr version 1.8.1-drill-r0 (build 6b605a4ea05b66e1a6bf843353abcb4834a4ced8)
+extra:       drill.version = 1.7.0
+
+file schema: root
+--------------------------------------------------------------------------------
+foo:         OPTIONAL BINARY O:UTF8 R:0 D:1
+
+row group 1: RC:2 TS:44 OFFSET:4
+--------------------------------------------------------------------------------
+foo:          BINARY SNAPPY DO:0 FPO:4 SZ:46/44/0.96 VC:2 ENC:PLAIN,BIT_PACKED,RLE
