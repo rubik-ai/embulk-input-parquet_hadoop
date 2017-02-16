@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * @author Koji Agawa
  */
-abstract class ParquetArrayConverter extends MessagePackRecordConverter {
+abstract class ParquetArrayConverter extends ParquetValueConverter {
     protected ArrayList<Value> currentArray;
 
     private ParquetArrayConverter(GroupType schema, ParentContainerUpdater updater) {
@@ -33,7 +33,7 @@ abstract class ParquetArrayConverter extends MessagePackRecordConverter {
 
         public A(GroupType schema, ParentContainerUpdater updater) {
             super(schema, updater);
-            elementConverter = newConverter(schema, new ParentContainerUpdater.Default() {
+            elementConverter = newConverter(schema, new ParentContainerUpdater.Noop() {
                 @Override
                 public void set(Value value) {
                     currentArray.add(value);
@@ -55,7 +55,7 @@ abstract class ParquetArrayConverter extends MessagePackRecordConverter {
 
             elementConverter = new GroupConverter() {
                 private Value currentElement = ValueFactory.newNil();
-                private Converter converter = newConverter(schema, new ParentContainerUpdater.Default() {
+                private Converter converter = newConverter(schema, new ParentContainerUpdater.Noop() {
                     @Override
                     public void set(Value value) {
                         currentElement = value;

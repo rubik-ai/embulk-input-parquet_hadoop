@@ -4,6 +4,9 @@ import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.PrimitiveConverter;
 import org.msgpack.value.ValueFactory;
 
+/**
+ * Parquet converter for Parquet primitive types.
+ */
 class ParquetPrimitiveConverter extends PrimitiveConverter implements HasParentContainerUpdater {
     protected final ParentContainerUpdater updater;
 
@@ -18,31 +21,32 @@ class ParquetPrimitiveConverter extends PrimitiveConverter implements HasParentC
 
     @Override
     public void addBoolean(boolean value) {
-        updater.setBoolean(value);
+        getUpdater().setBoolean(value);
     }
 
     @Override
     public void addInt(int value) {
-        updater.setInt(value);
+        getUpdater().setInt(value);
     }
 
     @Override
     public void addLong(long value) {
-        updater.setLong(value);
+        getUpdater().setLong(value);
     }
 
     @Override
     public void addFloat(float value) {
-        updater.setFloat(value);
+        getUpdater().setFloat(value);
     }
 
     @Override
     public void addDouble(double value) {
-        updater.setDouble(value);
+        getUpdater().setDouble(value);
     }
 
     @Override
     public void addBinary(Binary value) {
-        updater.set(ValueFactory.newBinary(value.getBytes()));
+        // It's safe to omit copy because values#getBytes returns copied array.
+        getUpdater().set(ValueFactory.newBinary(value.getBytes(), true));
     }
 }

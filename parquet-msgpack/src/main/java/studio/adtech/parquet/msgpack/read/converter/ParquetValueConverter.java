@@ -16,22 +16,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Koji Agawa
+ * A [[ParquetValueConverter]] is used to convert Parquet records into Message Pack [[Value]].
  */
-public class MessagePackRecordConverter extends GroupConverter implements HasParentContainerUpdater {
-    protected final ParentContainerUpdater updater;
-    // implements HasParentContainerUpdater
-    private final Converter[] converters;
+public class ParquetValueConverter extends ParquetGroupConverter {
+    // Converters for each field.
+    private final Converter[] fieldConverters;
 
-    protected InternalMap currentMap;
+    private InternalMap currentMap;
 
-
-    // TODO: configurable
+    // TODO: make configurable
     private boolean assumeBinaryIsString = false;
     private boolean assumeInt96IsTimestamp = true;
 
-    public MessagePackRecordConverter(GroupType schema, ParentContainerUpdater updater) {
-        this.updater = updater;
+    public ParquetValueConverter(GroupType schema, ParentContainerUpdater updater) {
+        super(updater);
 
         ArrayList<String> fieldNames = new ArrayList<>();
         for (Type type : schema.getFields()) {
@@ -39,7 +37,7 @@ public class MessagePackRecordConverter extends GroupConverter implements HasPar
         }
         this.currentMap = new InternalMap(fieldNames);
 
-        this.converters = new Converter[schema.getFieldCount()];
+        this.fieldConverters = new Converter[schema.getFieldCount()];
         int i = 0;
         for (Type field : schema.getFields()) {
             InternalMapUpdater update = new InternalMapUpdater(currentMap, i);
@@ -53,14 +51,14 @@ public class MessagePackRecordConverter extends GroupConverter implements HasPar
                     converter = convertField(field, update);
                     break;
                 case REPEATED:
-                    // array type
+                    // TODO: array type
                     converter = convertField(field, update);
                     break;
                 default:
                     // TODO:
                     throw new ParquetSchemaException("");
             }
-            converters[i++] = converter;
+            fieldConverters[i++] = converter;
         }
     }
 
@@ -70,27 +68,25 @@ public class MessagePackRecordConverter extends GroupConverter implements HasPar
 
     @Override
     public Converter getConverter(int fieldIndex) {
-        return converters[fieldIndex];
+        return fieldConverters[fieldIndex];
     }
 
     @Override
     public void start() {
         int i = 0;
-        for (Converter converter : converters) {
+        for (Converter converter : fieldConverters) {
             ((HasParentContainerUpdater)converter).getUpdater().start();
-            currentMap.setNullAt(i);
+            currentMap.set(i, ValueFactory.newNil());
             i += 1;
         }
     }
 
     @Override
     public void end() {
-        int i = 0;
-        for (Converter converter : converters) {
+        for (Converter converter : fieldConverters) {
             ((HasParentContainerUpdater)converter).getUpdater().end();
-            i += 1;
         }
-        updater.set(currentMap.build());
+        getUpdater().set(currentMap.build());
     }
 
     @Override
@@ -239,7 +235,7 @@ public class MessagePackRecordConverter extends GroupConverter implements HasPar
     private Converter convertGroupField(GroupType field, final ParentContainerUpdater updater) {
         OriginalType originalType = field.getOriginalType();
         if (originalType == null) {
-            return new MessagePackRecordConverter(field, new ParentContainerUpdater.Default() {
+            return new ParquetValueConverter(field, new ParentContainerUpdater.Noop() {
                 @Override
                 public void set(Value value) {
                     updater.set(value);
@@ -269,10 +265,10 @@ public class MessagePackRecordConverter extends GroupConverter implements HasPar
                 checkConversionRequirement(repeatedType.isRepetition(Type.Repetition.REPEATED),
                         "Invalid list type %s", field);
 
-                ParentContainerUpdater.Default arrayUpdater = new ParentContainerUpdater.Default() {
+                ParentContainerUpdater.Noop arrayUpdater = new ParentContainerUpdater.Noop() {
                     @Override
                     public void set(Value value) {
-                        MessagePackRecordConverter.this.updater.set(value);
+                        ParquetValueConverter.this.updater.set(value);
                     }
                 };
 
@@ -359,6 +355,9 @@ public class MessagePackRecordConverter extends GroupConverter implements HasPar
         );
     }
 
+    /**
+     * Mutable fixed-length map.
+     */
     private static class InternalMap {
         private final int numFields;
         private final Value[] kvs;
@@ -377,30 +376,22 @@ public class MessagePackRecordConverter extends GroupConverter implements HasPar
             kvs[index * 2 + 1] = value;
         }
 
-        public void setNullAt(int index) {
-            set(index, ValueFactory.newNil());
-        }
-
         public Value build() {
             return ValueFactory.newMap(kvs, false);
         }
     }
 
-    private static final class InternalMapUpdater implements ParentContainerUpdater {
+    /**
+     * Updater used together with field converters within a [[ParquetValueConverter]].  It propagates
+     * converted filed values to the `index`-th cell in `currentMap`.
+     */
+    private static final class InternalMapUpdater extends ParentContainerUpdater.Noop {
         private final InternalMap map;
         private final int index;
 
         InternalMapUpdater(InternalMap map, int index) {
             this.map = map;
             this.index = index;
-        }
-
-        @Override
-        public void start() {
-        }
-
-        @Override
-        public void end() {
         }
 
         @Override

@@ -4,11 +4,16 @@ import org.msgpack.value.Value;
 import org.msgpack.value.ValueFactory;
 
 /**
- * @author Koji Agawa
+ * A [[ParentContainerUpdater]] is used by a Parquet converter to set converted values to some
+ * corresponding parent container. For example, a converter for a `map` field may set
+ * converted values to a [[{@link org.msgpack.value.ImmutableMapValue}]]; or a converter for array
+ * elements may append converted values to an [[ArrayList]].
  */
 interface ParentContainerUpdater {
+    /** Called before a record field is being converted */
     void start();
 
+    /** Called after a record field is being converted */
     void end();
 
     void set(Value value);
@@ -27,7 +32,10 @@ interface ParentContainerUpdater {
 
     void setDouble(double value);
 
-    abstract class Default implements ParentContainerUpdater {
+    /**
+     * A no-op updater used for root converter (who doesn't have a parent).
+     */
+    class Noop implements ParentContainerUpdater {
         @Override
         public void start() {
         }

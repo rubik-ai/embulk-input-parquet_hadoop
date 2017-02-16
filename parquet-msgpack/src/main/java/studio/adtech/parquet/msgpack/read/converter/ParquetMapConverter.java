@@ -9,10 +9,7 @@ import org.msgpack.value.ValueFactory;
 
 import java.util.ArrayList;
 
-/**
- * @author Koji Agawa
- */
-class ParquetMapConverter extends MessagePackRecordConverter {
+class ParquetMapConverter extends ParquetValueConverter {
     private final KeyValueConverter keyValueConverter;
 
     private ArrayList<Value> kvs;
@@ -47,14 +44,14 @@ class ParquetMapConverter extends MessagePackRecordConverter {
         KeyValueConverter(Type keyType, Type valueType) {
             this.converters = new Converter[] {
                     // Converter for keys
-                    newConverter(keyType, new ParentContainerUpdater.Default() {
+                    newConverter(keyType, new ParentContainerUpdater.Noop() {
                         @Override
                         public void set(Value value) {
                             currentKey = value;
                         }
                     }),
                     // Converter for values
-                    newConverter(valueType, new ParentContainerUpdater.Default() {
+                    newConverter(valueType, new ParentContainerUpdater.Noop() {
                         @Override
                         public void set(Value value) {
                             currentValue = value;
