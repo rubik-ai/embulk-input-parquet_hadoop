@@ -138,8 +138,12 @@ public class ParquetValueConverter extends ParquetGroupConverter {
                     case INT_32:
                         return new ParquetPrimitiveConverter(updater);
                     case DATE:
-                        // TODO: DateType
-                        throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
+                        return new ParquetPrimitiveConverter(updater) {
+                            @Override
+                            public void addInt(int value) {
+                                getUpdater().setInt(value);
+                            }
+                        };
                     case DECIMAL:
                         DecimalType decimal = DecimalType.create(field, DecimalType.MAX_INT_DIGITS);
                         return new ParquetDecimalConverter.IntDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
@@ -422,44 +426,6 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         }
     }
 
-
-    private static class DecimalType {
-        static final int MAX_INT_DIGITS = 9;
-        static final int MAX_LONG_DIGITS = 18;
-
-        static DecimalType create(PrimitiveType field) {
-            return create(field, -1);
-        }
-
-        static DecimalType create(PrimitiveType field, int maxPrecision) {
-            int precision = field.getDecimalMetadata().getPrecision();
-            int scale = field.getDecimalMetadata().getScale();
-
-            checkConversionRequirement(
-                    (maxPrecision == -1) ||  (1 <= precision && precision <= maxPrecision),
-                    "Invalid decimal precision: %s cannot store %d digits (max %d)",
-                    field.getName(), precision, maxPrecision
-            );
-
-            return new DecimalType(precision, scale);
-        }
-
-        private final int precision;
-        private final int scale;
-
-        private DecimalType(int precision, int scale) {
-            this.precision = precision;
-            this.scale = scale;
-        }
-
-        public int getPrecision() {
-            return precision;
-        }
-
-        public int getScale() {
-            return scale;
-        }
-    }
 
     private static void checkConversionRequirement(boolean condition, String message, Object... args) {
         if (!condition) {

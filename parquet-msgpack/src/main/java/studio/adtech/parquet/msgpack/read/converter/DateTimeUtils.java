@@ -1,6 +1,6 @@
 package studio.adtech.parquet.msgpack.read.converter;
 
-public class DateTimeUtils {
+public abstract class DateTimeUtils {
     // see http://stackoverflow.com/questions/466321/convert-unix-timestamp-to-julian
     // it's 2440587.5, rounding up to compatible with Hive
     private static final int JULIAN_DAY_OF_EPOCH = 2440588;

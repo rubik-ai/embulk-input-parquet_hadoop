@@ -6,8 +6,10 @@ import org.msgpack.value.Value;
 import org.msgpack.value.ValueFactory;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.nio.ByteBuffer;
 
 /**
  * Parquet converter for fixed-precision decimals.
@@ -33,7 +35,7 @@ abstract class ParquetDecimalConverter extends ParquetPrimitiveConverter {
 
     @Override
     public void addValueFromDictionary(int dictionaryId) {
-        updater.set(expandedDictionary[dictionaryId]);
+        getUpdater().set(expandedDictionary[dictionaryId]);
     }
 
     // Converts decimals stored as INT32
@@ -45,23 +47,54 @@ abstract class ParquetDecimalConverter extends ParquetPrimitiveConverter {
     // Converts decimals stored as INT64
     @Override
     public void addLong(long value) {
-        updater.set(decimalFromLong(value));
+        getUpdater().set(decimalFromLong(value));
     }
 
     // Converts decimals stored as either FIXED_LENGTH_BYTE_ARRAY or BINARY
     @Override
     public void addBinary(Binary value) {
-        updater.set(decimalFromBinary(value));
+        getUpdater().set(decimalFromBinary(value));
     }
 
     protected Value decimalFromLong(long value) {
-        // TODO: FIXME
+        // TODO: support string conversion
         return ValueFactory.newFloat(new BigDecimal(value, mc).movePointLeft(scale).doubleValue());
     }
 
     protected Value decimalFromBinary(Binary value) {
-        // TODO: FIXME
-        return ValueFactory.newNil();
+        BigDecimal decimal;
+        if (precision < DecimalType.MAX_LONG_DIGITS) {
+            // Constructs a `Decimal` with an unscaled `Long` value if possible.
+            long unscaled = binaryToUnscaledLong(value);
+            decimal = new BigDecimal(unscaled, mc).movePointLeft(scale);
+        } else {
+            // Otherwise, resorts to an unscaled `BigInteger` instead.
+            decimal = new BigDecimal(new BigInteger(value.getBytes()), scale);
+        }
+        // TODO: support string conversion
+        return ValueFactory.newFloat(decimal.doubleValue());
+    }
+
+    private static long binaryToUnscaledLong(Binary binary) {
+        // The underlying `ByteBuffer` implementation is guaranteed to be `HeapByteBuffer`, so here
+        // we are using `Binary.toByteBuffer.array()` to steal the underlying byte array without
+        // copying it.
+        ByteBuffer buffer = binary.toByteBuffer();
+        byte[] bytes = buffer.array();
+        int start = buffer.arrayOffset() + buffer.position();
+        int end = buffer.arrayOffset() + buffer.limit();
+
+        long unscaled = 0L;
+        int i = start;
+
+        while (i < end) {
+            unscaled = (unscaled << 8) | (bytes[i] & 0xff);
+            i += 1;
+        }
+
+        int bits = 8 * (end - start);
+        unscaled = (unscaled << (64 - bits)) >> (64 - bits);
+        return unscaled;
     }
 
     static class IntDictionaryAware extends ParquetDecimalConverter {
