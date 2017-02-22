@@ -1,0 +1,99 @@
+file:                        file:parquet-thrift-compat.snappy.parquet
+creator:                     parquet-mr (build 32c46643845ea8a705c35d4ec8fc654cc8ff816d)
+extra:                       thrift.descriptor = { "id" : "STRUCT", "children" : [ { "name" : "boolColumn", "fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "BOOL" } },
+{ "name" : "byteColumn", "fieldId" : 2, "requirement" : "REQUIRED", "type" : { "id" : "BYTE" } }, { "name" : "shortColumn", "fieldId" : 3, "requirement" : "REQUIRED", "type" : { "id
+" : "I16" } }, { "name" : "intColumn", "fieldId" : 4, "requirement" : "REQUIRED", "type" : { "id" : "I32" } }, { "name" : "longColumn", "fieldId" : 5, "requirement" : "REQUIRED", "t
+ype" : { "id" : "I64" } }, { "name" : "doubleColumn", "fieldId" : 6, "requirement" : "REQUIRED", "type" : { "id" : "DOUBLE" } }, { "name" : "binaryColumn", "fieldId" : 7, "requireme
+nt" : "REQUIRED", "type" : { "id" : "STRING" } }, { "name" : "stringColumn", "fieldId" : 8, "requirement" : "REQUIRED", "type" : { "id" : "STRING" } }, { "name" : "enumColumn", "fie
+ldId" : 9, "requirement" : "REQUIRED", "type" : { "id" : "ENUM", "values" : [ { "id" : 0, "name" : "SPADES" }, { "id" : 1, "name" : "HEARTS" }, { "id" : 2, "name" : "DIAMONDS" }, {
+"id" : 3, "name" : "CLUBS" } ] } }, { "name" : "maybeBoolColumn", "fieldId" : 10, "requirement" : "OPTIONAL", "type" : { "id" : "BOOL" } }, { "name" : "maybeByteColumn", "fieldId" :
+ 11, "requirement" : "OPTIONAL", "type" : { "id" : "BYTE" } }, { "name" : "maybeShortColumn", "fieldId" : 12, "requirement" : "OPTIONAL", "type" : { "id" : "I16" } }, { "name" : "ma
+ybeIntColumn", "fieldId" : 13, "requirement" : "OPTIONAL", "type" : { "id" : "I32" } }, { "name" : "maybeLongColumn", "fieldId" : 14, "requirement" : "OPTIONAL", "type" : { "id" : "
+I64" } }, { "name" : "maybeDoubleColumn", "fieldId" : 15, "requirement" : "OPTIONAL", "type" : { "id" : "DOUBLE" } }, { "name" : "maybeBinaryColumn", "fieldId" : 16, "requirement" :
+ "OPTIONAL", "type" : { "id" : "STRING" } }, { "name" : "maybeStringColumn", "fieldId" : 17, "requirement" : "OPTIONAL", "type" : { "id" : "STRING" } }, { "name" : "maybeEnumColumn"
+, "fieldId" : 18, "requirement" : "OPTIONAL", "type" : { "id" : "ENUM", "values" : [ { "id" : 0, "name" : "SPADES" }, { "id" : 1, "name" : "HEARTS" }, { "id" : 2, "name" : "DIAMONDS
+" }, { "id" : 3, "name" : "CLUBS" } ] } }, { "name" : "stringsColumn", "fieldId" : 19, "requirement" : "REQUIRED", "type" : { "id" : "LIST", "values" : { "name" : "stringsColumn", "
+fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "STRING" } } } }, { "name" : "intSetColumn", "fieldId" : 20, "requirement" : "REQUIRED", "type" : { "id" : "SET", "values
+" : { "name" : "intSetColumn", "fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "I32" } } } }, { "name" : "intToStringColumn", "fieldId" : 21, "requirement" : "REQUIRED"
+, "type" : { "id" : "MAP", "key" : { "name" : "intToStringColumn_map_key", "fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "I32" } }, "value" : { "name" : "intToStringC
+olumn_map_value", "fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "STRING" } } } }, { "name" : "complexColumn", "fieldId" : 22, "requirement" : "REQUIRED", "type" : { "
+id" : "MAP", "key" : { "name" : "complexColumn_map_key", "fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "I32" } }, "value" : { "name" : "complexColumn_map_value", "fie
+ldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "LIST", "values" : { "name" : "complexColumn_map_value", "fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "STRUC
+T", "children" : [ { "name" : "nestedIntsColumn", "fieldId" : 1, "requirement" : "REQUIRED", "type" : { "id" : "LIST", "values" : { "name" : "nestedIntsColumn", "fieldId" : 1, "requ
+irement" : "REQUIRED", "type" : { "id" : "I32" } } } }, { "name" : "nestedStringColumn", "fieldId" : 2, "requirement" : "REQUIRED", "type" : { "id" : "STRING" } } ], "structOrUnionT
+ype" : "STRUCT" } } } } } } ], "structOrUnionType" : "STRUCT" }
+extra:                       thrift.class = org.apache.spark.sql.parquet.test.thrift.ParquetThriftCompat
+
+file schema:                 ParquetSchema
+--------------------------------------------------------------------------------
+boolColumn:                  REQUIRED BOOLEAN R:0 D:0
+byteColumn:                  REQUIRED INT32 R:0 D:0
+shortColumn:                 REQUIRED INT32 R:0 D:0
+intColumn:                   REQUIRED INT32 R:0 D:0
+longColumn:                  REQUIRED INT64 R:0 D:0
+doubleColumn:                REQUIRED DOUBLE R:0 D:0
+binaryColumn:                REQUIRED BINARY O:UTF8 R:0 D:0
+stringColumn:                REQUIRED BINARY O:UTF8 R:0 D:0
+enumColumn:                  REQUIRED BINARY O:ENUM R:0 D:0
+maybeBoolColumn:             OPTIONAL BOOLEAN R:0 D:1
+maybeByteColumn:             OPTIONAL INT32 R:0 D:1
+maybeShortColumn:            OPTIONAL INT32 R:0 D:1
+maybeIntColumn:              OPTIONAL INT32 R:0 D:1
+maybeLongColumn:             OPTIONAL INT64 R:0 D:1
+maybeDoubleColumn:           OPTIONAL DOUBLE R:0 D:1
+maybeBinaryColumn:           OPTIONAL BINARY O:UTF8 R:0 D:1
+maybeStringColumn:           OPTIONAL BINARY O:UTF8 R:0 D:1
+maybeEnumColumn:             OPTIONAL BINARY O:ENUM R:0 D:1
+stringsColumn:               REQUIRED F:1
+.stringsColumn_tuple:        REPEATED BINARY O:UTF8 R:1 D:1
+intSetColumn:                REQUIRED F:1
+.intSetColumn_tuple:         REPEATED INT32 R:1 D:1
+intToStringColumn:           REQUIRED F:1
+.map:                        REPEATED F:2
+..key:                       REQUIRED INT32 R:1 D:1
+..value:                     OPTIONAL BINARY O:UTF8 R:1 D:2
+complexColumn:               REQUIRED F:1
+.map:                        REPEATED F:2
+..key:                       REQUIRED INT32 R:1 D:1
+..value:                     OPTIONAL F:1
+...value_tuple:              REPEATED F:2
+....nestedIntsColumn:        REQUIRED F:1
+.....nestedIntsColumn_tuple: REPEATED INT32 R:3 D:4
+....nestedStringColumn:      REQUIRED BINARY O:UTF8 R:2 D:3
+
+row group 1:                 RC:10 TS:2846 OFFSET:4
+--------------------------------------------------------------------------------
+boolColumn:                   BOOLEAN SNAPPY DO:0 FPO:4 SZ:31/29/0.94 VC:10 ENC:PLAIN,BIT_PACKED
+byteColumn:                   INT32 SNAPPY DO:0 FPO:35 SZ:75/73/0.97 VC:10 ENC:PLAIN,BIT_PACKED
+shortColumn:                  INT32 SNAPPY DO:0 FPO:110 SZ:75/73/0.97 VC:10 ENC:PLAIN,BIT_PACKED
+intColumn:                    INT32 SNAPPY DO:0 FPO:185 SZ:75/73/0.97 VC:10 ENC:PLAIN,BIT_PACKED
+longColumn:                   INT64 SNAPPY DO:0 FPO:260 SZ:92/122/1.33 VC:10 ENC:PLAIN,BIT_PACKED
+doubleColumn:                 DOUBLE SNAPPY DO:0 FPO:352 SZ:102/122/1.20 VC:10 ENC:PLAIN,BIT_PACKED
+binaryColumn:                 BINARY SNAPPY DO:0 FPO:454 SZ:88/126/1.43 VC:10 ENC:PLAIN,BIT_PACKED
+stringColumn:                 BINARY SNAPPY DO:0 FPO:542 SZ:88/126/1.43 VC:10 ENC:PLAIN,BIT_PACKED
+enumColumn:                   BINARY SNAPPY DO:0 FPO:630 SZ:99/96/0.97 VC:10 ENC:PLAIN_DICTIONARY,BIT_PACKED
+maybeBoolColumn:              BOOLEAN SNAPPY DO:0 FPO:729 SZ:37/35/0.95 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeByteColumn:              INT32 SNAPPY DO:0 FPO:766 SZ:66/64/0.97 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeShortColumn:             INT32 SNAPPY DO:0 FPO:832 SZ:64/64/1.00 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeIntColumn:               INT32 SNAPPY DO:0 FPO:896 SZ:65/64/0.98 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeLongColumn:              INT64 SNAPPY DO:0 FPO:961 SZ:84/96/1.14 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeDoubleColumn:            DOUBLE SNAPPY DO:0 FPO:1045 SZ:86/96/1.12 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeBinaryColumn:            BINARY SNAPPY DO:0 FPO:1131 SZ:78/96/1.23 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeStringColumn:            BINARY SNAPPY DO:0 FPO:1209 SZ:78/96/1.23 VC:10 ENC:PLAIN,BIT_PACKED,RLE
+maybeEnumColumn:              BINARY SNAPPY DO:0 FPO:1287 SZ:104/101/0.97 VC:10 ENC:PLAIN_DICTIONARY,BIT_PACKED,RLE
+stringsColumn:
+.stringsColumn_tuple:         BINARY SNAPPY DO:0 FPO:1391 SZ:147/192/1.31 VC:30 ENC:PLAIN_DICTIONARY,RLE
+intSetColumn:
+.intSetColumn_tuple:          INT32 SNAPPY DO:0 FPO:1538 SZ:82/85/1.04 VC:10 ENC:PLAIN,RLE
+intToStringColumn:
+.map:
+..key:                        INT32 SNAPPY DO:0 FPO:1620 SZ:131/127/0.97 VC:30 ENC:PLAIN_DICTIONARY,RLE
+..value:                      BINARY SNAPPY DO:0 FPO:1751 SZ:147/192/1.31 VC:30 ENC:PLAIN_DICTIONARY,RLE
+complexColumn:
+.map:
+..key:                        INT32 SNAPPY DO:0 FPO:1898 SZ:131/127/0.97 VC:30 ENC:PLAIN_DICTIONARY,RLE
+..value:
+...value_tuple:
+....nestedIntsColumn:
+.....nestedIntsColumn_tuple:  INT32 SNAPPY DO:0 FPO:2029 SZ:282/323/1.15 VC:270 ENC:PLAIN_DICTIONARY,RLE
+....nestedStringColumn:       BINARY SNAPPY DO:0 FPO:2311 SZ:194/248/1.28 VC:90 ENC:PLAIN_DICTIONARY,RLE
