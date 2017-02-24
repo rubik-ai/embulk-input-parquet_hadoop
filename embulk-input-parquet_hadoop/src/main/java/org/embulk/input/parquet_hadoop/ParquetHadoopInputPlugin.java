@@ -1,16 +1,13 @@
 package org.embulk.input.parquet_hadoop;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.hadoop.ParquetReader;
-import org.embulk.config.TaskReport;
 import org.embulk.config.Config;
 import org.embulk.config.ConfigDiff;
 import org.embulk.config.ConfigSource;
 import org.embulk.config.Task;
+import org.embulk.config.TaskReport;
 import org.embulk.config.TaskSource;
 import org.embulk.spi.Column;
 import org.embulk.spi.DataException;
@@ -23,11 +20,14 @@ import org.embulk.spi.type.Types;
 import org.msgpack.value.Value;
 import studio.adtech.parquet.msgpack.read.MessagePackReadSupport;
 
+import java.io.IOException;
+import java.util.List;
+
 public class ParquetHadoopInputPlugin
         implements InputPlugin
 {
     public interface PluginTask
-            extends Task
+            extends Task, ConfigurationFactory.Task
     {
         @Config("path")
         String getPath();
@@ -60,6 +60,8 @@ public class ParquetHadoopInputPlugin
             InputPlugin.Control control)
     {
         PluginTask task = config.loadConfig(PluginTask.class);
+
+        Configuration conf = ConfigurationFactory.create(task);
 
         Schema schema = newSchema();
         int taskCount = 1;  // number of run() method calls
