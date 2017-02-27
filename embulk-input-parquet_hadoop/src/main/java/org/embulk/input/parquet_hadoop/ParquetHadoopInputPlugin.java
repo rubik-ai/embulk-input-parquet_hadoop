@@ -11,6 +11,7 @@ import org.apache.hadoop.fs.PathNotFoundException;
 import org.apache.parquet.ParquetRuntimeException;
 import org.apache.parquet.hadoop.util.HiddenFileFilter;
 import org.embulk.config.Config;
+import org.embulk.config.ConfigDefault;
 import org.embulk.config.ConfigDiff;
 import org.embulk.config.ConfigSource;
 import org.embulk.config.Task;
@@ -26,11 +27,13 @@ import org.embulk.spi.Schema;
 import org.embulk.spi.type.Types;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import studio.adtech.parquet.msgpack.read.MessagePackReadSupport;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ParquetHadoopInputPlugin
         implements InputPlugin
@@ -42,6 +45,10 @@ public class ParquetHadoopInputPlugin
     {
         @Config("path")
         String getPath();
+
+        @Config("parquet_log_level")
+        @ConfigDefault("\"INFO\"")
+        String getParquetLogLevel();
 
         List<String> getFiles();
         void setFiles(List<String> files);
@@ -57,6 +64,8 @@ public class ParquetHadoopInputPlugin
             InputPlugin.Control control)
     {
         PluginTask task = config.loadConfig(PluginTask.class);
+        configureParquetLogger(task);
+
         Path rootPath = new Path(task.getPath());
 
         try (PluginClassLoaderScope ignored = new PluginClassLoaderScope()) {
@@ -113,6 +122,7 @@ public class ParquetHadoopInputPlugin
             PageOutput output)
     {
         PluginTask task = taskSource.loadTask(PluginTask.class);
+        configureParquetLogger(task);
 
         final Column jsonColumn = schema.getColumn(0);
 
@@ -202,5 +212,31 @@ public class ParquetHadoopInputPlugin
             statusList.add(status);
         }
         return statusList;
+    }
+
+    private static void configureParquetLogger(PluginTask task)
+    {
+        // delegate java.util.logging to slf4j.
+        java.util.logging.Logger parquetLogger = java.util.logging.Logger.getLogger("org.apache.parquet");
+        if (parquetLogger.getHandlers().length == 0) {
+            parquetLogger.addHandler(new SLF4JBridgeHandler());
+            parquetLogger.setUseParentHandlers(false);
+        }
+
+        Level level;
+        try {
+            level = Level.parse(task.getParquetLogLevel());
+        } catch (IllegalArgumentException e) {
+            logger.warn("embulk-input-parquet_hadoop: Invalid parquet_log_level", e);
+            level = Level.WARNING;
+        }
+        // invoke static initializer that overrides log level.
+        try {
+            Class.forName("org.apache.parquet.Log");
+        } catch (ClassNotFoundException e) {
+            logger.warn("", e);
+        }
+
+        parquetLogger.setLevel(level);
     }
 }
