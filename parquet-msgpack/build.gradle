@@ -18,7 +18,10 @@ dependencies {
     compile 'org.msgpack:msgpack-core:0.8.11'
     provided 'org.msgpack:msgpack-core:0.8.11'
 
-    compile 'org.apache.hadoop:hadoop-client:2.7.+'
+    compile('org.apache.hadoop:hadoop-client:2.7.+') {
+        exclude group: 'log4j', module: 'log4j'
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
     compile 'org.apache.parquet:parquet-common:1.8.1'
     compile 'org.apache.parquet:parquet-encoding:1.8.1'
     compile 'org.apache.parquet:parquet-column:1.8.1'
@@ -30,4 +33,7 @@ dependencies {
     testCompile 'org.skyscreamer:jsonassert:1.4.0'
     testCompile 'org.apache.spark:spark-core_2.11:2.1.0'
     testCompile 'org.apache.spark:spark-sql_2.11:2.1.0'
+
+    testCompile 'log4j:log4j:1.2.17'
+    testCompile 'org.slf4j:slf4j-log4j12:1.7.24'
 }

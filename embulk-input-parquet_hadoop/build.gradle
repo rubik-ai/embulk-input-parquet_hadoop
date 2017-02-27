@@ -23,6 +23,7 @@ dependencies {
     provided "org.embulk:embulk-core:0.8.16"
 
     compile project(':parquet-msgpack')
+    compile 'org.slf4j:log4j-over-slf4j:1.7.24'
 
     testCompile "junit:junit:4.+"
     testCompile 'org.embulk:embulk-standards:0.8.15'
