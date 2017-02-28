@@ -23,7 +23,7 @@ public class ParquetAsJSONIterator implements JSONIterator {
 
     @Override
     public String next() {
-        return inner.toString();
+        return inner.next().toString();
     }
 
     @Override

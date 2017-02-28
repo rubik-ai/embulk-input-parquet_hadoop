@@ -15,6 +15,10 @@ TODO: Write short description here and build.gradle file.
 - **option2**: description (string, default: `"myvalue"`)
 - **option3**: description (string, default: `null`)
 
+## Hadoop Configuration
+
+- `parquet.read.bad.record.threshold` (float, default: `0`)
+
 ## Example
 
 ```yaml
