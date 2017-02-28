@@ -1,0 +1,3 @@
+"{""c_str"":""foo"",""c_int"":1,""c_double"":1.5,""c_bool"":true,""c_json"":""{\""foo\"":1}""}"
+"{""c_str"":""bar"",""c_int"":2,""c_double"":2.5,""c_bool"":false,""c_json"":""{\""bar\"":2}""}"
+"{""c_str"":""baz"",""c_int"":3,""c_double"":3.5,""c_bool"":true,""c_json"":""{\""baz\"":3}""}"

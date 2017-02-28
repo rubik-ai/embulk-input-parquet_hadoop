@@ -1,0 +1,2 @@
+type: parquet_hadoop
+parquet_log_level: WARNING
