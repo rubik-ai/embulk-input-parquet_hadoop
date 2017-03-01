@@ -5,7 +5,7 @@ TODO: Write short description here and build.gradle file.
 ## Overview
 
 * **Plugin type**: input
-* **Resume supported**: yes
+* **Resume supported**: no
 * **Cleanup supported**: yes
 * **Guess supported**: no
 
