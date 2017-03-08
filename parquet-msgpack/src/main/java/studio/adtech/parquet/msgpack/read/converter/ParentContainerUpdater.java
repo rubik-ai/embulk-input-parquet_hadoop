@@ -26,7 +26,8 @@ import org.msgpack.value.ValueFactory;
  * converted values to a [[{@link org.msgpack.value.ImmutableMapValue}]]; or a converter for array
  * elements may append converted values to an [[ArrayList]].
  */
-interface ParentContainerUpdater {
+interface ParentContainerUpdater
+{
     /** Called before a record field is being converted */
     void start();
 
@@ -52,51 +53,62 @@ interface ParentContainerUpdater {
     /**
      * A no-op updater used for root converter (who doesn't have a parent).
      */
-    class Noop implements ParentContainerUpdater {
+    class Noop implements ParentContainerUpdater
+    {
         @Override
-        public void start() {
+        public void start()
+        {
         }
 
         @Override
-        public void end() {
+        public void end()
+        {
         }
 
         @Override
-        public void set(Value value) {
+        public void set(Value value)
+        {
         }
 
         @Override
-        public void setBoolean(boolean value) {
+        public void setBoolean(boolean value)
+        {
             set(ValueFactory.newBoolean(value));
         }
 
         @Override
-        public void setByte(byte value) {
+        public void setByte(byte value)
+        {
             set(ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setShort(short value) {
+        public void setShort(short value)
+        {
             set(ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setInt(int value) {
+        public void setInt(int value)
+        {
             set(ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setLong(long value) {
+        public void setLong(long value)
+        {
             set(ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setFloat(float value) {
+        public void setFloat(float value)
+        {
             set(ValueFactory.newFloat(value));
         }
 
         @Override
-        public void setDouble(double value) {
+        public void setDouble(double value)
+        {
             set(ValueFactory.newFloat(value));
         }
     }

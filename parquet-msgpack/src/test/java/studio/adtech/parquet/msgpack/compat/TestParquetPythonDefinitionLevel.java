@@ -28,9 +28,11 @@ import studio.adtech.parquet.msgpack.ParquetAsJSONIterator;
  *
  * @see https://github.com/jcrobak/parquet-python/blob/45165f3159505524d708894337e68120fcd844e7/test/test_read_support.py#L207
  */
-public class TestParquetPythonDefinitionLevel {
+public class TestParquetPythonDefinitionLevel
+{
     @Test
-    public void testReadingAFileThatContainsNullRecords() throws Exception {
+    public void testReadingAFileThatContainsNullRecords() throws Exception
+    {
         JSONIterator parquet = ParquetAsJSONIterator.fromResource(
                 "test-data/parquet-python/test-null.parquet");
 
@@ -39,7 +41,8 @@ public class TestParquetPythonDefinitionLevel {
     }
 
     @Test
-    public void testReadingAFileThatContainsNullRecordsForAPlainColumnThatIsConvertedToUTF8() throws Exception {
+    public void testReadingAFileThatContainsNullRecordsForAPlainColumnThatIsConvertedToUTF8() throws Exception
+    {
         JSONIterator parquet = ParquetAsJSONIterator.fromResource(
                 "test-data/parquet-python/test-converted-type-null.parquet");
 
@@ -48,7 +51,8 @@ public class TestParquetPythonDefinitionLevel {
     }
 
     @Test
-    public void testReadingAFileThatContainsNullRecordsForAPlainDictionaryColumn() throws Exception {
+    public void testReadingAFileThatContainsNullRecordsForAPlainDictionaryColumn() throws Exception
+    {
         JSONIterator parquet = ParquetAsJSONIterator.fromResource(
                 "test-data/parquet-python/test-null-dictionary.parquet");
 
@@ -60,5 +64,4 @@ public class TestParquetPythonDefinitionLevel {
         JSONAssert.assertEquals(parquet.next(), "{\"foo\":\"bar\"}", true);
         JSONAssert.assertEquals(parquet.next(), "{\"foo\":\"baz\"}", true);
     }
-
 }

@@ -37,7 +37,8 @@ import java.util.List;
 /**
  * A [[ParquetValueConverter]] is used to convert Parquet records into Message Pack [[Value]].
  */
-public class ParquetValueConverter extends ParquetGroupConverter {
+public class ParquetValueConverter extends ParquetGroupConverter
+{
     // Converters for each field.
     private final Converter[] fieldConverters;
 
@@ -47,7 +48,8 @@ public class ParquetValueConverter extends ParquetGroupConverter {
     private boolean assumeBinaryIsString = false;
     private boolean assumeInt96IsTimestamp = true;
 
-    public ParquetValueConverter(GroupType schema, ParentContainerUpdater updater) {
+    public ParquetValueConverter(GroupType schema, ParentContainerUpdater updater)
+    {
         super(updater);
 
         ArrayList<String> fieldNames = new ArrayList<>();
@@ -64,62 +66,73 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         }
     }
 
-    Value getCurrentRecord() {
+    Value getCurrentRecord()
+    {
         return currentMap.build();
     }
 
     @Override
-    public Converter getConverter(int fieldIndex) {
+    public Converter getConverter(int fieldIndex)
+    {
         return fieldConverters[fieldIndex];
     }
 
     @Override
-    public void start() {
+    public void start()
+    {
         int i = 0;
         for (Converter converter : fieldConverters) {
-            ((HasParentContainerUpdater)converter).getUpdater().start();
+            ((HasParentContainerUpdater) converter).getUpdater().start();
             currentMap.set(i, ValueFactory.newNil());
             i += 1;
         }
     }
 
     @Override
-    public void end() {
+    public void end()
+    {
         for (Converter converter : fieldConverters) {
-            ((HasParentContainerUpdater)converter).getUpdater().end();
+            ((HasParentContainerUpdater) converter).getUpdater().end();
         }
         getUpdater().set(currentMap.build());
     }
 
     @Override
-    public ParentContainerUpdater getUpdater() {
+    public ParentContainerUpdater getUpdater()
+    {
         return updater;
     }
 
-    private Converter newFieldConverter(Type parquetType, ParentContainerUpdater updater) {
+    private Converter newFieldConverter(Type parquetType, ParentContainerUpdater updater)
+    {
         if (parquetType.isRepetition(Type.Repetition.REPEATED) && parquetType.getOriginalType() != OriginalType.LIST) {
             // A repeated field that is neither contained by a `LIST`- or `MAP`-annotated group nor
             // annotated by `LIST` or `MAP` should be interpreted as a required list of required
             // elements where the element type is the type of the field.
             if (parquetType.isPrimitive()) {
                 return new RepeatedPrimitiveConverter(parquetType, updater);
-            } else {
+            }
+            else {
                 return new RepeatedGroupConverter(parquetType, updater);
             }
-        } else {
+        }
+        else {
             return newConverter(parquetType, updater);
         }
     }
 
-    private Converter newConverter(Type parquetType, ParentContainerUpdater updater) {
+    private Converter newConverter(Type parquetType, ParentContainerUpdater updater)
+    {
         if (parquetType.isPrimitive()) {
             return newConverterForPrimitiveField(parquetType.asPrimitiveType(), updater);
-        } else {
+        }
+        else {
             return newConverterForGroupField(parquetType.asGroupType(), updater);
         }
     }
 
-    private Converter newConverterForPrimitiveField(PrimitiveType field, final ParentContainerUpdater updater) {
+    private Converter newConverterForPrimitiveField(PrimitiveType field, final ParentContainerUpdater updater)
+    {
         PrimitiveType.PrimitiveTypeName typeName = field.getPrimitiveTypeName();
         OriginalType originalType = field.getOriginalType();
         String typeString = (originalType == null ? String.valueOf(typeName) : String.format("%s (%s)", typeName, originalType));
@@ -133,58 +146,67 @@ public class ParquetValueConverter extends ParquetGroupConverter {
             case INT32:
                 if (originalType == null) {
                     return new ParquetPrimitiveConverter(updater);
-                } else switch (originalType) {
-                    case INT_8:
-                        return new ParquetPrimitiveConverter(updater) {
-                            @Override
-                            public void addInt(int value) {
-                                this.getUpdater().setByte((byte)value);
-                            }
-                        };
-                    case INT_16:
-                        return new ParquetPrimitiveConverter(updater) {
-                            @Override
-                            public void addInt(int value) {
-                                this.getUpdater().setShort((short)value);
-                            }
-                        };
-                    case INT_32:
-                        return new ParquetPrimitiveConverter(updater);
-                    case DATE:
-                        return new ParquetPrimitiveConverter(updater) {
-                            @Override
-                            public void addInt(int value) {
-                                getUpdater().setInt(value);
-                            }
-                        };
-                    case DECIMAL:
-                        DecimalType decimal = DecimalType.create(field, DecimalType.MAX_INT_DIGITS);
-                        return new ParquetDecimalConverter.IntDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
-                    case UINT_8:
-                    case UINT_16:
-                    case UINT_32:
-                        throw new ParquetSchemaException("Parquet type not supported: " + typeString);
-                    case TIME_MILLIS:
-                        throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
-                    default:
-                        throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                }
+                else {
+                    switch (originalType) {
+                        case INT_8:
+                            return new ParquetPrimitiveConverter(updater) {
+                                @Override
+                                public void addInt(int value)
+                                {
+                                    this.getUpdater().setByte((byte) value);
+                                }
+                            };
+                        case INT_16:
+                            return new ParquetPrimitiveConverter(updater) {
+                                @Override
+                                public void addInt(int value)
+                                {
+                                    this.getUpdater().setShort((short) value);
+                                }
+                            };
+                        case INT_32:
+                            return new ParquetPrimitiveConverter(updater);
+                        case DATE:
+                            return new ParquetPrimitiveConverter(updater) {
+                                @Override
+                                public void addInt(int value)
+                                {
+                                    getUpdater().setInt(value);
+                                }
+                            };
+                        case DECIMAL:
+                            DecimalType decimal = DecimalType.create(field, DecimalType.MAX_INT_DIGITS);
+                            return new ParquetDecimalConverter.IntDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
+                        case UINT_8:
+                        case UINT_16:
+                        case UINT_32:
+                            throw new ParquetSchemaException("Parquet type not supported: " + typeString);
+                        case TIME_MILLIS:
+                            throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
+                        default:
+                            throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                    }
                 }
 
             case INT64:
                 if (originalType == null) {
                     return new ParquetPrimitiveConverter(updater);
-                } else switch (originalType) {
-                    case INT_64:
-                        return new ParquetPrimitiveConverter(updater);
-                    case DECIMAL:
-                        DecimalType decimal = DecimalType.create(field, DecimalType.MAX_LONG_DIGITS);
-                        return new ParquetDecimalConverter.LongDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
-                    case UINT_64:
-                        throw new ParquetSchemaException("Parquet type not supported: " + typeString);
-                    case TIMESTAMP_MILLIS:
-                        throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
-                    default:
-                        throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                }
+                else {
+                    switch (originalType) {
+                        case INT_64:
+                            return new ParquetPrimitiveConverter(updater);
+                        case DECIMAL:
+                            DecimalType decimal = DecimalType.create(field, DecimalType.MAX_LONG_DIGITS);
+                            return new ParquetDecimalConverter.LongDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
+                        case UINT_64:
+                            throw new ParquetSchemaException("Parquet type not supported: " + typeString);
+                        case TIMESTAMP_MILLIS:
+                            throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
+                        default:
+                            throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                    }
                 }
 
             case INT96:
@@ -195,7 +217,8 @@ public class ParquetValueConverter extends ParquetGroupConverter {
                                 "Please try to set assumeInt96IsTimestamp to true.");
                 return new ParquetPrimitiveConverter(updater) {
                     @Override
-                    public void addBinary(Binary value) {
+                    public void addBinary(Binary value)
+                    {
                         if (value.length() != 12) {
                             throw new AssertionError(
                                     "Timestamps (with nanoseconds) are expected to be stored in 12-byte long binaries, " +
@@ -214,34 +237,41 @@ public class ParquetValueConverter extends ParquetGroupConverter {
                 if (originalType == null) {
                     if (assumeBinaryIsString) {
                         return new ParquetStringConverter(updater);
-                    } else {
+                    }
+                    else {
                         return new ParquetPrimitiveConverter(updater);
                     }
-                } else switch (originalType) {
-                    case UTF8:
-                    case ENUM:
-                    case JSON:
-                        return new ParquetStringConverter(updater);
-                    case BSON:
-                        return new ParquetPrimitiveConverter(updater);
-                    case DECIMAL:
-                        DecimalType decimal = DecimalType.create(field);
-                        return new ParquetDecimalConverter.BinaryDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
-                    default:
-                        throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                }
+                else {
+                    switch (originalType) {
+                        case UTF8:
+                        case ENUM:
+                        case JSON:
+                            return new ParquetStringConverter(updater);
+                        case BSON:
+                            return new ParquetPrimitiveConverter(updater);
+                        case DECIMAL:
+                            DecimalType decimal = DecimalType.create(field);
+                            return new ParquetDecimalConverter.BinaryDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
+                        default:
+                            throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                    }
                 }
 
             case FIXED_LEN_BYTE_ARRAY:
                 if (originalType == null) {
                     throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
-                } else switch (originalType) {
-                    case DECIMAL:
-                        DecimalType decimal = DecimalType.create(field);
-                        return new ParquetDecimalConverter.BinaryDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
-                    case INTERVAL:
-                        throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
-                    default:
-                        throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                }
+                else {
+                    switch (originalType) {
+                        case DECIMAL:
+                            DecimalType decimal = DecimalType.create(field);
+                            return new ParquetDecimalConverter.BinaryDictionaryAware(decimal.getPrecision(), decimal.getScale(), updater);
+                        case INTERVAL:
+                            throw new ParquetSchemaException("Parquet type not yet supported: " + typeString);
+                        default:
+                            throw new ParquetSchemaException("Illegal Parquet type: " + typeString);
+                    }
                 }
 
             default:
@@ -249,66 +279,71 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         }
     }
 
-    private Converter newConverterForGroupField(GroupType field, final ParentContainerUpdater updater) {
+    private Converter newConverterForGroupField(GroupType field, final ParentContainerUpdater updater)
+    {
         OriginalType originalType = field.getOriginalType();
         if (originalType == null) {
             return new ParquetValueConverter(field, new ParentContainerUpdater.Noop() {
                 @Override
-                public void set(Value value) {
+                public void set(Value value)
+                {
                     updater.set(value);
                 }
             });
-        } else switch (originalType) {
-            // A Parquet list is represented as a 3-level structure:
-            //
-            //   <list-repetition> group <name> (LIST) {
-            //     repeated group list {
-            //       <element-repetition> <element-type> element;
-            //     }
-            //   }
-            //
-            // However, according to the most recent Parquet format spec (not released yet up until
-            // writing), some 2-level structures are also recognized for backwards-compatibility.  Thus,
-            // we need to check whether the 2nd level or the 3rd level refers to list element type.
-            //
-            // See: https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#lists
-            case LIST:
-                checkConversionRequirement(field.getFieldCount() == 1,
-                        "Invalid list type %s", field);
-
-                Type repeatedType = field.getType(0);
-                checkConversionRequirement(repeatedType.isRepetition(Type.Repetition.REPEATED),
-                        "Invalid list type %s", field);
-
-                return new ParquetArrayConverter(field, updater);
-
-            case MAP:
-            case MAP_KEY_VALUE:
-                checkConversionRequirement(
-                        field.getFieldCount() == 1 && !field.getType(0).isPrimitive(),
-                        "Invalid map type: %s", field);
-
-                GroupType keyValueType = field.getType(0).asGroupType();
-                checkConversionRequirement(
-                        keyValueType.isRepetition(Type.Repetition.REPEATED) && keyValueType.getFieldCount() == 2,
-                        "Invalid map type: %s", field);
-
-                Type keyType = keyValueType.getType(0);
-                checkConversionRequirement(
-                        keyType.isPrimitive(),
-                        "Map key type is expected to be a primitive type, but found: %s", keyType);
-
-                Type valueType = keyValueType.getType(1);
-
-                return new ParquetMapConverter(updater, keyType, valueType);
-
-            default:
-                throw new ParquetSchemaException("Unrecognized Parquet type: " + field);
         }
+        else {
+            switch (originalType) {
+                // A Parquet list is represented as a 3-level structure:
+                //
+                //   <list-repetition> group <name> (LIST) {
+                //     repeated group list {
+                //       <element-repetition> <element-type> element;
+                //     }
+                //   }
+                //
+                // However, according to the most recent Parquet format spec (not released yet up until
+                // writing), some 2-level structures are also recognized for backwards-compatibility.  Thus,
+                // we need to check whether the 2nd level or the 3rd level refers to list element type.
+                //
+                // See: https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#lists
+                case LIST:
+                    checkConversionRequirement(field.getFieldCount() == 1,
+                            "Invalid list type %s", field);
 
+                    Type repeatedType = field.getType(0);
+                    checkConversionRequirement(repeatedType.isRepetition(Type.Repetition.REPEATED),
+                            "Invalid list type %s", field);
+
+                    return new ParquetArrayConverter(field, updater);
+
+                case MAP:
+                case MAP_KEY_VALUE:
+                    checkConversionRequirement(
+                            field.getFieldCount() == 1 && !field.getType(0).isPrimitive(),
+                            "Invalid map type: %s", field);
+
+                    GroupType keyValueType = field.getType(0).asGroupType();
+                    checkConversionRequirement(
+                            keyValueType.isRepetition(Type.Repetition.REPEATED) && keyValueType.getFieldCount() == 2,
+                            "Invalid map type: %s", field);
+
+                    Type keyType = keyValueType.getType(0);
+                    checkConversionRequirement(
+                            keyType.isPrimitive(),
+                            "Map key type is expected to be a primitive type, but found: %s", keyType);
+
+                    Type valueType = keyValueType.getType(1);
+
+                    return new ParquetMapConverter(updater, keyType, valueType);
+
+                default:
+                    throw new ParquetSchemaException("Unrecognized Parquet type: " + field);
+            }
+        }
     }
 
-    private static boolean isElementType(Type repeatedType, String parentName) {
+    private static boolean isElementType(Type repeatedType, String parentName)
+    {
         return (
                 // For legacy 2-level list types with primitive element type, e.g.:
                 //
@@ -356,7 +391,8 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         );
     }
 
-    private static void checkConversionRequirement(boolean condition, String message, Object... args) {
+    private static void checkConversionRequirement(boolean condition, String message, Object... args)
+    {
         if (!condition) {
             throw new ParquetSchemaException(String.format(message, args));
         }
@@ -365,11 +401,13 @@ public class ParquetValueConverter extends ParquetGroupConverter {
     /**
      * Mutable fixed-length map.
      */
-    private static class InternalMap {
+    private static class InternalMap
+    {
         private final int numFields;
         private final Value[] kvs;
 
-        public InternalMap(List<String> keys) {
+        public InternalMap(List<String> keys)
+        {
             this.numFields = keys.size();
             this.kvs = new Value[numFields * 2];
             int i = 0;
@@ -379,11 +417,13 @@ public class ParquetValueConverter extends ParquetGroupConverter {
             }
         }
 
-        public void set(int index, Value value) {
+        public void set(int index, Value value)
+        {
             kvs[index * 2 + 1] = value;
         }
 
-        public Value build() {
+        public Value build()
+        {
             return ValueFactory.newMap(kvs, false);
         }
     }
@@ -392,52 +432,62 @@ public class ParquetValueConverter extends ParquetGroupConverter {
      * Updater used together with field converters within a [[ParquetValueConverter]].  It propagates
      * converted filed values to the `index`-th cell in `currentMap`.
      */
-    private static final class InternalMapUpdater extends ParentContainerUpdater.Noop {
+    private static final class InternalMapUpdater extends ParentContainerUpdater.Noop
+    {
         private final InternalMap map;
         private final int index;
 
-        InternalMapUpdater(InternalMap map, int index) {
+        InternalMapUpdater(InternalMap map, int index)
+        {
             this.map = map;
             this.index = index;
         }
 
         @Override
-        public void set(Value value) {
+        public void set(Value value)
+        {
             map.set(index, value);
         }
 
         @Override
-        public void setBoolean(boolean value) {
+        public void setBoolean(boolean value)
+        {
             map.set(index, ValueFactory.newBoolean(value));
         }
 
         @Override
-        public void setByte(byte value) {
+        public void setByte(byte value)
+        {
             map.set(index, ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setShort(short value) {
+        public void setShort(short value)
+        {
             map.set(index, ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setInt(int value) {
+        public void setInt(int value)
+        {
             map.set(index, ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setLong(long value) {
+        public void setLong(long value)
+        {
             map.set(index, ValueFactory.newInteger(value));
         }
 
         @Override
-        public void setFloat(float value) {
+        public void setFloat(float value)
+        {
             map.set(index, ValueFactory.newFloat(value));
         }
 
         @Override
-        public void setDouble(double value) {
+        public void setDouble(double value)
+        {
             map.set(index, ValueFactory.newFloat(value));
         }
     }
@@ -460,11 +510,13 @@ public class ParquetValueConverter extends ParquetGroupConverter {
      *
      * @see https://github.com/apache/parquet-format/blob/master/LogicalTypes.md#lists
      */
-    private class ParquetArrayConverter extends ParquetGroupConverter {
+    private class ParquetArrayConverter extends ParquetGroupConverter
+    {
         private ArrayList<Value> currentArray;
         private Converter elementConverter;
 
-        private ParquetArrayConverter(GroupType schema, ParentContainerUpdater updater) {
+        private ParquetArrayConverter(GroupType schema, ParentContainerUpdater updater)
+        {
             super(updater);
 
             Type repeatedType = schema.getType(0);
@@ -473,11 +525,13 @@ public class ParquetValueConverter extends ParquetGroupConverter {
                 // type of the repeated field.
                 elementConverter = newConverter(repeatedType, new ParentContainerUpdater.Noop() {
                     @Override
-                    public void set(Value value) {
+                    public void set(Value value)
+                    {
                         ParquetArrayConverter.this.currentArray.add(value);
                     }
                 });
-            } else {
+            }
+            else {
                 // If the repeated field corresponds to the syntactic group in the standard 3-level Parquet
                 // LIST layout, creates a new converter using the only child field of the repeated field.
                 elementConverter = new ElementConverter(repeatedType.asGroupType().getType(0));
@@ -485,100 +539,117 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         }
 
         @Override
-        public Converter getConverter(int fieldIndex) {
+        public Converter getConverter(int fieldIndex)
+        {
             return elementConverter;
         }
 
         // NOTE: We can't reuse the mutable `ArrayList` here and must instantiate a new buffer for the
         // next value.
         @Override
-        public void start() {
+        public void start()
+        {
             currentArray = new ArrayList<>();
         }
 
         @Override
-        public void end() {
+        public void end()
+        {
             getUpdater().set(ValueFactory.newArray(currentArray));
         }
 
         /** Array element converter */
-        private class ElementConverter extends GroupConverter {
+        private class ElementConverter extends GroupConverter
+        {
             private Value currentElement;
             private Converter converter;
 
-            public ElementConverter(Type parquetType) {
+            public ElementConverter(Type parquetType)
+            {
                 converter = newConverter(parquetType, new ParentContainerUpdater.Noop() {
                     @Override
-                    public void set(Value value) {
+                    public void set(Value value)
+                    {
                         currentElement = value;
                     }
                 });
             }
 
             @Override
-            public Converter getConverter(int fieldIndex) {
+            public Converter getConverter(int fieldIndex)
+            {
                 return converter;
             }
 
             @Override
-            public void start() {
+            public void start()
+            {
                 currentElement = ValueFactory.newNil();
             }
 
             @Override
-            public void end() {
+            public void end()
+            {
                 ParquetArrayConverter.this.currentArray.add(currentElement);
             }
         }
-
     }
 
     /** Parquet converter for maps */
-    private class ParquetMapConverter extends ParquetGroupConverter {
+    private class ParquetMapConverter extends ParquetGroupConverter
+    {
         private final KeyValueConverter keyValueConverter;
 
         private ArrayList<Value> kvs;
 
-        ParquetMapConverter(ParentContainerUpdater updater, Type keyType, Type valueType) {
+        ParquetMapConverter(ParentContainerUpdater updater, Type keyType, Type valueType)
+        {
             super(updater);
             keyValueConverter = new KeyValueConverter(keyType, valueType);
         }
 
         @Override
-        public Converter getConverter(int fieldIndex) {
+        public Converter getConverter(int fieldIndex)
+        {
             return keyValueConverter;
         }
 
         @Override
-        public void start() {
+        public void start()
+        {
             kvs = new ArrayList<>();
         }
 
         @Override
-        public void end() {
+        public void end()
+        {
             Value mapValue = ValueFactory.newMap(kvs.toArray(new Value[kvs.size()]));
             getUpdater().set(mapValue);
         }
 
-        private final class KeyValueConverter extends GroupConverter {
+        private final class KeyValueConverter extends GroupConverter
+        {
             private final Converter[] converters;
 
             private Value currentKey = ValueFactory.newNil();
             private Value currentValue = ValueFactory.newNil();
 
-            KeyValueConverter(Type keyType, Type valueType) {
+            KeyValueConverter(Type keyType, Type valueType)
+            {
                 this.converters = new Converter[] {
                         // Converter for keys
                         newConverter(keyType, new ParentContainerUpdater.Noop() {
                             @Override
-                            public void set(Value value) {
+                            public void set(Value value)
+                            {
                                 currentKey = value;
                             }
                         }),
                         // Converter for values
                         newConverter(valueType, new ParentContainerUpdater.Noop() {
                             @Override
-                            public void set(Value value) {
+                            public void set(Value value)
+                            {
                                 currentValue = value;
                             }
                         })
@@ -586,18 +657,21 @@ public class ParquetValueConverter extends ParquetGroupConverter {
             }
 
             @Override
-            public Converter getConverter(int fieldIndex) {
+            public Converter getConverter(int fieldIndex)
+            {
                 return converters[fieldIndex];
             }
 
             @Override
-            public void start() {
+            public void start()
+            {
                 currentKey = ValueFactory.newNil();
                 currentValue = ValueFactory.newNil();
             }
 
             @Override
-            public void end() {
+            public void end()
+            {
                 ParquetMapConverter.this.kvs.add(currentKey);
                 ParquetMapConverter.this.kvs.add(currentValue);
             }
@@ -608,25 +682,30 @@ public class ParquetValueConverter extends ParquetGroupConverter {
      * A primitive converter for converting unannotated repeated primitive values to required arrays
      * of required primitives values.
      */
-    private class RepeatedPrimitiveConverter extends PrimitiveConverter implements HasParentContainerUpdater {
+    private class RepeatedPrimitiveConverter extends PrimitiveConverter implements HasParentContainerUpdater
+    {
         private final ParentContainerUpdater updater;
         private final PrimitiveConverter elementConverter;
         private ArrayList<Value> currentArray;
 
-        public RepeatedPrimitiveConverter(Type parquetType, final ParentContainerUpdater parentUpdater) {
+        public RepeatedPrimitiveConverter(Type parquetType, final ParentContainerUpdater parentUpdater)
+        {
             this.updater = new ParentContainerUpdater.Noop() {
                 @Override
-                public void start() {
+                public void start()
+                {
                     RepeatedPrimitiveConverter.this.currentArray = new ArrayList<>();
                 }
 
                 @Override
-                public void end() {
+                public void end()
+                {
                     parentUpdater.set(ValueFactory.newArray(RepeatedPrimitiveConverter.this.currentArray));
                 }
 
                 @Override
-                public void set(Value value) {
+                public void set(Value value)
+                {
                     RepeatedPrimitiveConverter.this.currentArray.add(value);
                 }
             };
@@ -635,52 +714,62 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         }
 
         @Override
-        public ParentContainerUpdater getUpdater() {
+        public ParentContainerUpdater getUpdater()
+        {
             return updater;
         }
 
         @Override
-        public boolean hasDictionarySupport() {
+        public boolean hasDictionarySupport()
+        {
             return elementConverter.hasDictionarySupport();
         }
 
         @Override
-        public void setDictionary(Dictionary dictionary) {
+        public void setDictionary(Dictionary dictionary)
+        {
             elementConverter.setDictionary(dictionary);
         }
 
         @Override
-        public void addValueFromDictionary(int dictionaryId) {
+        public void addValueFromDictionary(int dictionaryId)
+        {
             elementConverter.addValueFromDictionary(dictionaryId);
         }
 
         @Override
-        public void addBinary(Binary value) {
+        public void addBinary(Binary value)
+        {
             elementConverter.addBinary(value);
         }
 
         @Override
-        public void addBoolean(boolean value) {
+        public void addBoolean(boolean value)
+        {
             elementConverter.addBoolean(value);
         }
 
         @Override
-        public void addDouble(double value) {
+        public void addDouble(double value)
+        {
             elementConverter.addDouble(value);
         }
 
         @Override
-        public void addFloat(float value) {
+        public void addFloat(float value)
+        {
             elementConverter.addFloat(value);
         }
 
         @Override
-        public void addInt(int value) {
+        public void addInt(int value)
+        {
             elementConverter.addInt(value);
         }
 
         @Override
-        public void addLong(long value) {
+        public void addLong(long value)
+        {
             elementConverter.addLong(value);
         }
     }
@@ -689,25 +778,30 @@ public class ParquetValueConverter extends ParquetGroupConverter {
      * A group converter for converting unannotated repeated group values to required arrays of
      * required struct values.
      */
-    private class RepeatedGroupConverter extends GroupConverter implements HasParentContainerUpdater {
+    private class RepeatedGroupConverter extends GroupConverter implements HasParentContainerUpdater
+    {
         private final ParentContainerUpdater updater;
         private final GroupConverter elementConverter;
         private ArrayList<Value> currentArray;
 
-        public RepeatedGroupConverter(Type parquetType, final ParentContainerUpdater parentUpdater) {
+        public RepeatedGroupConverter(Type parquetType, final ParentContainerUpdater parentUpdater)
+        {
             this.updater = new ParentContainerUpdater.Noop() {
                 @Override
-                public void start() {
+                public void start()
+                {
                     RepeatedGroupConverter.this.currentArray = new ArrayList<>();
                 }
 
                 @Override
-                public void end() {
+                public void end()
+                {
                     parentUpdater.set(ValueFactory.newArray(RepeatedGroupConverter.this.currentArray));
                 }
 
                 @Override
-                public void set(Value value) {
+                public void set(Value value)
+                {
                     RepeatedGroupConverter.this.currentArray.add(value);
                 }
             };
@@ -716,22 +810,26 @@ public class ParquetValueConverter extends ParquetGroupConverter {
         }
 
         @Override
-        public ParentContainerUpdater getUpdater() {
+        public ParentContainerUpdater getUpdater()
+        {
             return updater;
         }
 
         @Override
-        public Converter getConverter(int fieldIndex) {
+        public Converter getConverter(int fieldIndex)
+        {
             return elementConverter.getConverter(fieldIndex);
         }
 
         @Override
-        public void start() {
+        public void start()
+        {
             elementConverter.start();
         }
 
         @Override
-        public void end() {
+        public void end()
+        {
             elementConverter.end();
         }
     }

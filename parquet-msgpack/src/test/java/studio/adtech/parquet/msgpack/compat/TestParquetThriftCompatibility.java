@@ -35,9 +35,11 @@ import static org.msgpack.value.ValueFactory.newMap;
 import static org.msgpack.value.ValueFactory.newNil;
 import static org.msgpack.value.ValueFactory.newString;
 
-public class TestParquetThriftCompatibility {
+public class TestParquetThriftCompatibility
+{
     @Test
-    public void testing() {
+    public void testing()
+    {
         ParquetIterator parquet = ParquetIterator.fromResource("test-data/spark/parquet-thrift-compat.snappy.parquet");
 
         String[] suits = new String[]{"SPADES", "HEARTS", "DIAMONDS", "CLUBS"};
@@ -101,7 +103,8 @@ public class TestParquetThriftCompatibility {
         }
     }
 
-    private Value newComplexInnerValue(int i) {
+    private Value newComplexInnerValue(int i)
+    {
         return newArray(
                 newMap(
                         newString("nestedIntsColumn"), newArray(newInteger(i + 0 + 0), newInteger(i + 0 + 1), newInteger(i + 0 + 2)),

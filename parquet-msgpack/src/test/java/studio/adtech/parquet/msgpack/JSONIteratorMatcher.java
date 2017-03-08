@@ -25,15 +25,18 @@ import org.skyscreamer.jsonassert.JSONCompareResult;
 
 import java.util.Iterator;
 
-public class JSONIteratorMatcher extends TypeSafeDiagnosingMatcher<JSONIterator> {
+public class JSONIteratorMatcher extends TypeSafeDiagnosingMatcher<JSONIterator>
+{
     private final JSONIterator expected;
 
-    private JSONIteratorMatcher(JSONIterator expected) {
+    private JSONIteratorMatcher(JSONIterator expected)
+    {
         this.expected = expected;
     }
 
     @Override
-    protected boolean matchesSafely(JSONIterator actual, Description mismatchDescription) {
+    protected boolean matchesSafely(JSONIterator actual, Description mismatchDescription)
+    {
         int line = 1;
 
         Iterator<String> itLeft = expected;
@@ -54,19 +57,23 @@ public class JSONIteratorMatcher extends TypeSafeDiagnosingMatcher<JSONIterator>
                         mismatchDescription.appendText(r.getMessage());
                         return false;
                     }
-                } catch (JSONException e) {
+                }
+                catch (JSONException e) {
                     mismatchDescription.appendText("at line " + line + ": ");
                     mismatchDescription.appendText(e.toString());
                     throw new AssertionError(e);
                 }
-            } else if (!hasLeft && !hasRight) {
+            }
+            else if (!hasLeft && !hasRight) {
                 return true;
-            } else {
+            }
+            else {
                 // left or right has extra line
                 mismatchDescription.appendText("at line " + line + ": ");
                 if (hasLeft) {
                     mismatchDescription.appendText("expected has extra lines");
-                } else {
+                }
+                else {
                     mismatchDescription.appendText("actual has extra lines");
                 }
                 return false;
@@ -76,12 +83,13 @@ public class JSONIteratorMatcher extends TypeSafeDiagnosingMatcher<JSONIterator>
         }
     }
 
-    public static Matcher<JSONIterator> sameAs(JSONIterator expected) {
+    public static Matcher<JSONIterator> sameAs(JSONIterator expected)
+    {
         return new JSONIteratorMatcher(expected);
     }
 
     @Override
-    public void describeTo(Description description) {
-
+    public void describeTo(Description description)
+    {
     }
 }

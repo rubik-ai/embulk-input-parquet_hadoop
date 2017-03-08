@@ -41,11 +41,13 @@ import static studio.adtech.parquet.msgpack.JSONIteratorMatcher.sameAs;
  * @see https://github.com/jcrobak/parquet-python/blob/45165f3159505524d708894337e68120fcd844e7/test/test_read_support.py#L109
  */
 @RunWith(Parameterized.class)
-public class TestParquetCompatibility {
+public class TestParquetCompatibility
+{
     private final String parquetFilename;
 
     @Parameterized.Parameters
-    public static List<String> data() {
+    public static List<String> data()
+    {
         return Arrays.asList(
                 "test-data/parquet-python/nation.plain.parquet",
                 "test-data/parquet-python/nation.dict.parquet",
@@ -55,12 +57,14 @@ public class TestParquetCompatibility {
         );
     }
 
-    public TestParquetCompatibility(String parquetFilename) {
+    public TestParquetCompatibility(String parquetFilename)
+    {
         this.parquetFilename = parquetFilename;
     }
 
     @Test
-    public void testing() throws Exception {
+    public void testing() throws Exception
+    {
         JSONIterator parquet = ParquetAsJSONIterator.fromResource(parquetFilename);
 
         boolean isImpala = parquetFilename.contains("impala");
@@ -76,5 +80,4 @@ public class TestParquetCompatibility {
 
         assertThat(parquet, is(sameAs(csv)));
     }
-
 }

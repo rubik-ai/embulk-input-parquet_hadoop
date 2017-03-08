@@ -35,11 +35,13 @@ import static org.junit.Assert.assertThat;
 import static studio.adtech.parquet.msgpack.JSONIteratorMatcher.sameAs;
 
 @RunWith(Parameterized.class)
-public class TestParquetCompatibilityAgainstJson {
+public class TestParquetCompatibilityAgainstJson
+{
     private final String parquetFilename;
 
     @Parameterized.Parameters
-    public static List<String> data() {
+    public static List<String> data()
+    {
         return Arrays.asList(
                 "test-data/parquet-cpp/alltypes_plain.parquet",
                 "test-data/parquet-cpp/alltypes_plain.snappy.parquet",
@@ -62,12 +64,14 @@ public class TestParquetCompatibilityAgainstJson {
         );
     }
 
-    public TestParquetCompatibilityAgainstJson(String parquetFilename) {
+    public TestParquetCompatibilityAgainstJson(String parquetFilename)
+    {
         this.parquetFilename = parquetFilename;
     }
 
     @Test
-    public void testing() {
+    public void testing()
+    {
         JSONIterator parquet = ParquetAsJSONIterator.fromResource(parquetFilename);
 
         String jsonName = parquetFilename.replaceFirst("\\.parquet$", ".jsonl");

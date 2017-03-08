@@ -46,6 +46,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import studio.adtech.parquet.msgpack.read.MessagePackReadSupport;
 
 import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -100,12 +101,14 @@ public class ParquetHadoopInputPlugin
             List<String> files = Lists.transform(statusList, new Function<FileStatus, String>() {
                     @Nullable
                     @Override
-                    public String apply(@Nullable FileStatus input) {
+                    public String apply(@Nullable FileStatus input)
+                    {
                         return input.getPath().toString();
                     }
             });
             task.setFiles(files);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw Throwables.propagate(e);
         }
 
@@ -152,7 +155,8 @@ public class ParquetHadoopInputPlugin
             ParquetRowReader<Value> reader;
             try (PluginClassLoaderScope ignored = new PluginClassLoaderScope()) {
                 reader = new ParquetRowReader<>(conf, filePath, new MessagePackReadSupport());
-            } catch (ParquetRuntimeException | IOException e) {
+            }
+            catch (ParquetRuntimeException | IOException e) {
                 throw new DataException(e);
             }
 
@@ -160,7 +164,8 @@ public class ParquetHadoopInputPlugin
             while (true) {
                 try (PluginClassLoaderScope ignored = new PluginClassLoaderScope()) {
                     value = reader.read();
-                } catch (ParquetRuntimeException | IOException e) {
+                }
+                catch (ParquetRuntimeException | IOException e) {
                     throw new DataException(e);
                 }
                 if (value == null) {
@@ -175,7 +180,8 @@ public class ParquetHadoopInputPlugin
 
             try (PluginClassLoaderScope ignored = new PluginClassLoaderScope()) {
                 reader.close();
-            } catch (ParquetRuntimeException | IOException e) {
+            }
+            catch (ParquetRuntimeException | IOException e) {
                 throw new DataException(e);
             }
         }
@@ -195,7 +201,8 @@ public class ParquetHadoopInputPlugin
         return new PageBuilder(Exec.getBufferAllocator(), schema, output);
     }
 
-    private List<FileStatus> listFileStatuses(FileSystem fs, Path rootPath) throws IOException {
+    private List<FileStatus> listFileStatuses(FileSystem fs, Path rootPath) throws IOException
+    {
         List<FileStatus> fileStatuses = Lists.newArrayList();
 
         FileStatus[] entries = fs.globStatus(rootPath, HiddenFileFilter.INSTANCE);
@@ -207,7 +214,8 @@ public class ParquetHadoopInputPlugin
             if (entry.isDirectory()) {
                 List<FileStatus> subEntries = listRecursive(fs, entry);
                 fileStatuses.addAll(subEntries);
-            } else {
+            }
+            else {
                 fileStatuses.add(entry);
             }
         }
@@ -223,7 +231,8 @@ public class ParquetHadoopInputPlugin
             for (FileStatus entry : entries) {
                 statusList.addAll(listRecursive(fs, entry));
             }
-        } else {
+        }
+        else {
             statusList.add(status);
         }
         return statusList;
@@ -241,14 +250,16 @@ public class ParquetHadoopInputPlugin
         Level level;
         try {
             level = Level.parse(task.getParquetLogLevel());
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             logger.warn("embulk-input-parquet_hadoop: Invalid parquet_log_level", e);
             level = Level.WARNING;
         }
         // invoke static initializer that overrides log level.
         try {
             Class.forName("org.apache.parquet.Log");
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             logger.warn("", e);
         }
 

@@ -19,12 +19,15 @@ package studio.adtech.parquet.msgpack.read.converter;
 
 import org.apache.parquet.ParquetRuntimeException;
 
-public class ParquetSchemaException extends ParquetRuntimeException {
-    ParquetSchemaException(String message) {
+public class ParquetSchemaException extends ParquetRuntimeException
+{
+    ParquetSchemaException(String message)
+    {
         super(message);
     }
 
-    ParquetSchemaException(String message, Throwable cause) {
+    ParquetSchemaException(String message, Throwable cause)
+    {
         super(message, cause);
     }
 }

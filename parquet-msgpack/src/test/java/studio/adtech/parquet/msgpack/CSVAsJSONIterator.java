@@ -27,37 +27,42 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
 
-public class CSVAsJSONIterator implements JSONIterator {
-
+public class CSVAsJSONIterator implements JSONIterator
+{
     private final CSVHeaderMap headerMap;
     private final CSVParser parser;
     private final Iterator<CSVRecord> inner;
     private final JsonFactory jsonFactory;
 
-    public static CSVAsJSONIterator fromResource(String name, CSVFormat format, CSVHeaderMap headerMap) {
+    public static CSVAsJSONIterator fromResource(String name, CSVFormat format, CSVHeaderMap headerMap)
+    {
         File file = new File(Thread.currentThread().getContextClassLoader().getResource(name).getPath());
         return new CSVAsJSONIterator(file, format, headerMap);
     }
 
-    public CSVAsJSONIterator(File file, CSVFormat format, CSVHeaderMap headerMap) {
+    public CSVAsJSONIterator(File file, CSVFormat format, CSVHeaderMap headerMap)
+    {
         try {
             this.headerMap = headerMap;
             FileReader reader = new FileReader(file);
             parser = headerMap.injectHeaderFormat(format).parse(reader);
             inner = parser.iterator();
             jsonFactory = new JsonFactory();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean hasNext() {
+    public boolean hasNext()
+    {
         return inner.hasNext();
     }
 
     @Override
-    public String next() {
+    public String next()
+    {
         CSVRecord record = inner.next();
         StringWriter json = new StringWriter();
         try {
@@ -72,19 +77,22 @@ public class CSVAsJSONIterator implements JSONIterator {
             }
             gen.writeEndObject();
             gen.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
         return json.toString();
     }
 
     @Override
-    public void remove() {
+    public void remove()
+    {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws IOException
+    {
         parser.close();
     }
 }

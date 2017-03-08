@@ -25,14 +25,17 @@ import studio.adtech.parquet.msgpack.read.converter.MessagePackRecordMaterialize
 
 import java.util.Map;
 
-public class MessagePackReadSupport extends ReadSupport<Value> {
+public class MessagePackReadSupport extends ReadSupport<Value>
+{
     @Override
-    public RecordMaterializer<Value> prepareForRead(Configuration configuration, Map<String, String> keyValueMetaData, MessageType fileSchema, ReadContext readContext) {
+    public RecordMaterializer<Value> prepareForRead(Configuration configuration, Map<String, String> keyValueMetaData, MessageType fileSchema, ReadContext readContext)
+    {
         return new MessagePackRecordMaterializer(fileSchema);
     }
 
     @Override
-    public ReadContext init(InitContext context) {
+    public ReadContext init(InitContext context)
+    {
         return new ReadContext(context.getFileSchema());
     }
 }

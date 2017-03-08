@@ -24,51 +24,61 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class ParquetIterator implements Iterator<Value>, Closeable {
+public class ParquetIterator implements Iterator<Value>, Closeable
+{
     private final ParquetReader<Value> reader;
     private Value item;
 
-    public static ParquetIterator fromResource(String name) {
+    public static ParquetIterator fromResource(String name)
+    {
         Path path = new Path(Thread.currentThread().getContextClassLoader().getResource(name).getPath());
         return new ParquetIterator(path);
     }
 
-    public ParquetIterator(Path path) {
+    public ParquetIterator(Path path)
+    {
         try {
             reader = ParquetReader.builder(new MessagePackReadSupport(), path).build();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
         item = read();
     }
 
-    private Value read() {
+    private Value read()
+    {
         try {
             return reader.read();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean hasNext() {
+    public boolean hasNext()
+    {
         return item != null;
     }
 
     @Override
-    public Value next() {
+    public Value next()
+    {
         Value ret = this.item;
         this.item = read();
         return ret;
     }
 
     @Override
-    public void remove() {
+    public void remove()
+    {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws IOException
+    {
         reader.close();
     }
 }

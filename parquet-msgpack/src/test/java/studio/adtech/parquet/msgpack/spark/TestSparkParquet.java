@@ -54,9 +54,11 @@ import static org.msgpack.value.ValueFactory.newString;
 /**
  * Integration tests for compatibility with parquet files that written by spark.
  */
-public class TestSparkParquet extends SparkTestBase {
+public class TestSparkParquet extends SparkTestBase
+{
     @Test
-    public void testPrimitives() throws Exception {
+    public void testPrimitives() throws Exception
+    {
         /*
         message spark_schema {
           optional binary string (UTF8);
@@ -87,7 +89,7 @@ public class TestSparkParquet extends SparkTestBase {
                         createStructField("short", ShortType, true)
                 )
                 .withData(
-                        RowFactory.create("foo", new byte[] { 0x20 }, true, new java.sql.Date(0), new java.sql.Timestamp(1), 1.5d, 2.5f, (byte)3, 4, 5L, (short)6),
+                        RowFactory.create("foo", new byte[] { 0x20 }, true, new java.sql.Date(0), new java.sql.Timestamp(1), 1.5d, 2.5f, (byte) 3, 4, 5L, (short) 6),
                         RowFactory.create(null, null, null, null, null, null, null, null, null, null, null)
                 )
                 .read();
@@ -124,7 +126,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testDecimal() throws Exception {
+    public void testDecimal() throws Exception
+    {
         /*
         message spark_schema {
           optional int32 d_int32 (DECIMAL(9,3));
@@ -160,7 +163,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testDecimalLegacy() throws Exception {
+    public void testDecimalLegacy() throws Exception
+    {
         /*
         message spark_schema {
           optional fixed_len_byte_array(5) column (DECIMAL(10,3));
@@ -189,7 +193,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testMapStringKey() throws Exception {
+    public void testMapStringKey() throws Exception
+    {
         /*
         message spark_schema {
           optional group column (MAP) {
@@ -205,14 +210,14 @@ public class TestSparkParquet extends SparkTestBase {
                         createStructField("column", createMapType(StringType, IntegerType, true), true)
                 )
                 .withData(
-                        RowFactory.create(new HashMap<String, Integer>(){{
+                        RowFactory.create(new HashMap<String, Integer>(){ {
                             put("foo", 1);
                             put("bar", 2);
-                        }}),
-                        RowFactory.create(new HashMap<String, Integer>(){{
+                        } }),
+                        RowFactory.create(new HashMap<String, Integer>(){ {
                             put("baz", null);
-                        }}),
-                        RowFactory.create((Object)null)
+                        } }),
+                        RowFactory.create((Object) null)
                 )
                 .read();
 
@@ -238,7 +243,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testMapIntegerKey() throws Exception {
+    public void testMapIntegerKey() throws Exception
+    {
         /*
         message spark_schema {
           optional group column (MAP) {
@@ -254,10 +260,10 @@ public class TestSparkParquet extends SparkTestBase {
                         createStructField("column", createMapType(IntegerType, IntegerType, true), true)
                 )
                 .withData(
-                        RowFactory.create(new HashMap<Integer, Integer>(){{
+                        RowFactory.create(new HashMap<Integer, Integer>(){ {
                             put(1, 100);
                             put(2, 200);
-                        }})
+                        } })
                 )
                 .read();
 
@@ -271,7 +277,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testMapLegacy() throws Exception {
+    public void testMapLegacy() throws Exception
+    {
         /*
         message spark_schema {
           optional group column (MAP) {
@@ -287,14 +294,14 @@ public class TestSparkParquet extends SparkTestBase {
                         createStructField("column", createMapType(StringType, IntegerType, true), true)
                 )
                 .withData(
-                        RowFactory.create(new HashMap<String, Integer>(){{
+                        RowFactory.create(new HashMap<String, Integer>(){ {
                             put("foo", 1);
                             put("bar", 2);
-                        }}),
-                        RowFactory.create(new HashMap<String, Integer>(){{
+                        } }),
+                        RowFactory.create(new HashMap<String, Integer>(){ {
                             put("baz", null);
-                        }}),
-                        RowFactory.create((Object)null)
+                        } }),
+                        RowFactory.create((Object) null)
                 )
                 .withLegacyFormat()
                 .read();
@@ -321,7 +328,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testNestedStruct() throws Exception {
+    public void testNestedStruct() throws Exception
+    {
         /*
         message spark_schema {
           optional group column {
@@ -337,11 +345,10 @@ public class TestSparkParquet extends SparkTestBase {
                 )
                 .withData(
                         RowFactory.create(RowFactory.create(123)),
-                        RowFactory.create(RowFactory.create((Object)null)),
-                        RowFactory.create((Object)null)
+                        RowFactory.create(RowFactory.create((Object) null)),
+                        RowFactory.create((Object) null)
                 )
                 .read();
-
 
         Value expected0 = newMap(
                 newString("column"), newMap(
@@ -364,7 +371,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testArray() throws Exception {
+    public void testArray() throws Exception
+    {
         /*
         message spark_schema {
           optional group column (LIST) {
@@ -379,12 +387,11 @@ public class TestSparkParquet extends SparkTestBase {
                         createStructField("column", createArrayType(IntegerType, true), true)
                 )
                 .withData(
-                        RowFactory.create((Object)new Integer[] { 1, 2 }),
-                        RowFactory.create((Object)new Integer[] { null, null }),
-                        RowFactory.create((Object)null)
+                        RowFactory.create((Object) new Integer[] { 1, 2 }),
+                        RowFactory.create((Object) new Integer[] { null, null }),
+                        RowFactory.create((Object) null)
                 )
                 .read();
-
 
         Value expected0 = newMap(
                 newString("column"), newArray(newInteger(1), newInteger(2))
@@ -403,7 +410,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testArrayLegacy() throws Exception {
+    public void testArrayLegacy() throws Exception
+    {
         /*
         message spark_schema {
           optional group column (LIST) {
@@ -418,13 +426,12 @@ public class TestSparkParquet extends SparkTestBase {
                         createStructField("column", createArrayType(IntegerType, true), true)
                 )
                 .withData(
-                        RowFactory.create((Object)new Integer[] { 1, 2 }),
-                        RowFactory.create((Object)new Integer[] { null, null }),
-                        RowFactory.create((Object)null)
+                        RowFactory.create((Object) new Integer[] { 1, 2 }),
+                        RowFactory.create((Object) new Integer[] { null, null }),
+                        RowFactory.create((Object) null)
                 )
                 .withLegacyFormat()
                 .read();
-
 
         Value expected0 = newMap(
                 newString("column"), newArray(newInteger(1), newInteger(2))
@@ -443,7 +450,8 @@ public class TestSparkParquet extends SparkTestBase {
     }
 
     @Test
-    public void testArrayLegacy2Level() throws Exception {
+    public void testArrayLegacy2Level() throws Exception
+    {
         /*
         message spark_schema {
           optional group column (LIST) {
@@ -456,12 +464,11 @@ public class TestSparkParquet extends SparkTestBase {
                         createStructField("column", createArrayType(IntegerType, false), true)
                 )
                 .withData(
-                        RowFactory.create((Object)new Integer[] { 1, 2 }),
-                        RowFactory.create((Object)null)
+                        RowFactory.create((Object) new Integer[] { 1, 2 }),
+                        RowFactory.create((Object) null)
                 )
                 .withLegacyFormat()
                 .read();
-
 
         Value expected0 = newMap(
                 newString("column"), newArray(newInteger(1), newInteger(2))

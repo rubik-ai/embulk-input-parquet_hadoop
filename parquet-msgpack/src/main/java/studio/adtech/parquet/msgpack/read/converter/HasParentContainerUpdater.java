@@ -17,6 +17,7 @@
  */
 package studio.adtech.parquet.msgpack.read.converter;
 
-interface HasParentContainerUpdater {
+interface HasParentContainerUpdater
+{
     ParentContainerUpdater getUpdater();
 }

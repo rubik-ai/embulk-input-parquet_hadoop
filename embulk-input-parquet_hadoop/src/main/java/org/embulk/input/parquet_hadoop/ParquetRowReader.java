@@ -48,7 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ParquetRowReader<T> {
+public class ParquetRowReader<T>
+{
     private static final Logger logger = Exec.getLogger(ParquetRowReader.class);
 
     private final Path filePath;
@@ -69,7 +70,8 @@ public class ParquetRowReader<T> {
     private static final boolean strictTypeChecking = true;
     private static final FilterCompat.Filter filter = FilterCompat.NOOP;
 
-    public ParquetRowReader(Configuration configuration, Path filePath, ReadSupport<T> readSupport) throws IOException {
+    public ParquetRowReader(Configuration configuration, Path filePath, ReadSupport<T> readSupport) throws IOException
+    {
         this.filePath = filePath;
 
         ParquetMetadata parquetMetadata = ParquetFileReader.readFooter(configuration, filePath, ParquetMetadataConverter.NO_FILTER);
@@ -100,7 +102,8 @@ public class ParquetRowReader<T> {
         logger.info("ParquetRowReader initialized will read a total of " + total + " records.");
     }
 
-    private void checkRead() throws IOException {
+    private void checkRead() throws IOException
+    {
         if (current == totalCountLoadedSoFar) {
             PageReadStore pages = reader.readNextRowGroup();
             if (pages == null) {
@@ -119,7 +122,8 @@ public class ParquetRowReader<T> {
      * @throws IOException
      * @throws ParquetDecodingException
      */
-    public T read() throws IOException {
+    public T read() throws IOException
+    {
         T currentValue = null;
         boolean recordFound = false;
         while (!recordFound) {
@@ -134,7 +138,8 @@ public class ParquetRowReader<T> {
 
                 try {
                     currentValue = recordReader.read();
-                } catch (RecordMaterializer.RecordMaterializationException e) {
+                }
+                catch (RecordMaterializer.RecordMaterializationException e) {
                     // this might throw, but it's fatal if it does.
                     unmaterializableRecordCounter.incErrors(e);
                     logger.debug("skipping a corrupt record");
@@ -157,7 +162,8 @@ public class ParquetRowReader<T> {
                 recordFound = true;
 
                 logger.debug("read value: {}", currentValue);
-            } catch (RuntimeException e) {
+            }
+            catch (RuntimeException e) {
                 throw new ParquetDecodingException(
                         String.format("Can not read value at %d in block %d in file %s", current, currentBlock, filePath), e);
             }
@@ -166,11 +172,13 @@ public class ParquetRowReader<T> {
         return currentValue;
     }
 
-    public void close() throws IOException {
+    public void close() throws IOException
+    {
         reader.close();
     }
 
-    private static <K, V> Map<K, Set<V>> toSetMultiMap(Map<K, V> map) {
+    private static <K, V> Map<K, Set<V>> toSetMultiMap(Map<K, V> map)
+    {
         Map<K, Set<V>> setMultiMap = new HashMap<>();
         for (Map.Entry<K, V> entry : map.entrySet()) {
             Set<V> set = new HashSet<>();

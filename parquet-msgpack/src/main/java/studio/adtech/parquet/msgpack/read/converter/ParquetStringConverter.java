@@ -25,20 +25,24 @@ import org.msgpack.value.ValueFactory;
 /**
  * Parquet converter for strings. A dictionary is used to minimize string decoding cost.
  */
-class ParquetStringConverter extends ParquetPrimitiveConverter {
+class ParquetStringConverter extends ParquetPrimitiveConverter
+{
     private Value[] expandedDictionary = null;
 
-    ParquetStringConverter(ParentContainerUpdater updater) {
+    ParquetStringConverter(ParentContainerUpdater updater)
+    {
         super(updater);
     }
 
     @Override
-    public boolean hasDictionarySupport() {
+    public boolean hasDictionarySupport()
+    {
         return true;
     }
 
     @Override
-    public void setDictionary(Dictionary dictionary) {
+    public void setDictionary(Dictionary dictionary)
+    {
         expandedDictionary = new Value[dictionary.getMaxId() + 1];
         for (int id = 0; id <= dictionary.getMaxId(); id++) {
             // This is copied array. Copying at ValueFactory#newString is not necessary.
@@ -48,12 +52,14 @@ class ParquetStringConverter extends ParquetPrimitiveConverter {
     }
 
     @Override
-    public void addValueFromDictionary(int dictionaryId) {
+    public void addValueFromDictionary(int dictionaryId)
+    {
         updater.set(expandedDictionary[dictionaryId]);
     }
 
     @Override
-    public void addBinary(Binary value) {
+    public void addBinary(Binary value)
+    {
         // This is copied array. Copying at ValueFactory#newString is not necessary.
         byte[] bytes = value.getBytes();
         updater.set(ValueFactory.newString(bytes));

@@ -17,15 +17,18 @@ package studio.adtech.parquet.msgpack.read.converter;
 
 import org.apache.parquet.schema.PrimitiveType;
 
-class DecimalType {
+class DecimalType
+{
     static final int MAX_INT_DIGITS = 9;
     static final int MAX_LONG_DIGITS = 18;
 
-    static DecimalType create(PrimitiveType field) {
+    static DecimalType create(PrimitiveType field)
+    {
         return create(field, -1);
     }
 
-    static DecimalType create(PrimitiveType field, int maxPrecision) {
+    static DecimalType create(PrimitiveType field, int maxPrecision)
+    {
         int precision = field.getDecimalMetadata().getPrecision();
         int scale = field.getDecimalMetadata().getScale();
 
@@ -40,16 +43,19 @@ class DecimalType {
     private final int precision;
     private final int scale;
 
-    private DecimalType(int precision, int scale) {
+    private DecimalType(int precision, int scale)
+    {
         this.precision = precision;
         this.scale = scale;
     }
 
-    public int getPrecision() {
+    public int getPrecision()
+    {
         return precision;
     }
 
-    public int getScale() {
+    public int getScale()
+    {
         return scale;
     }
 }

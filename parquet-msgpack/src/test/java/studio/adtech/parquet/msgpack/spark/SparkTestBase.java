@@ -38,14 +38,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-abstract public class SparkTestBase {
+public abstract class SparkTestBase
+{
     protected static SparkSession spark;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @BeforeClass
-    public static void beforeAll() {
+    public static void beforeAll()
+    {
         spark = SparkSession.builder()
                 .master("local[2]")
                 .appName("test")
@@ -53,55 +55,65 @@ abstract public class SparkTestBase {
     }
 
     @AfterClass
-    public static void afterAll() {
+    public static void afterAll()
+    {
         if (spark != null) {
             spark.stop();
             spark = null;
         }
     }
 
-    protected ParquetVerifier parquet(String name) {
+    protected ParquetVerifier parquet(String name)
+    {
         return new ParquetVerifier(name);
     }
 
-    protected class ParquetVerifier {
+    protected class ParquetVerifier
+    {
         private final String name;
         private StructType schema;
         private List<Row> data;
         private Map<String, String> options = new HashMap<>();
         private boolean isLegacyFormat = false;
 
-        public ParquetVerifier(String name) {
+        public ParquetVerifier(String name)
+        {
             this.name = name;
         }
 
-        public ParquetVerifier withSchema(StructField... fields) {
+        public ParquetVerifier withSchema(StructField... fields)
+        {
             this.schema = new StructType(fields);
             return this;
         }
 
-        public ParquetVerifier withSchema(StructType schema) {
+        public ParquetVerifier withSchema(StructType schema)
+        {
             this.schema = schema;
             return this;
         }
 
-        public ParquetVerifier withData(List<Row> data) {
+        public ParquetVerifier withData(List<Row> data)
+        {
             this.data = data;
             return this;
         }
 
-        public ParquetVerifier withData(Row... data) {
+        public ParquetVerifier withData(Row... data)
+        {
             this.data = Arrays.asList(data);
             return this;
         }
 
-        public ParquetVerifier withLegacyFormat() {
+        public ParquetVerifier withLegacyFormat()
+        {
             this.options.put(SQLConf$.MODULE$.PARQUET_WRITE_LEGACY_FORMAT().key(), "true");
             this.isLegacyFormat = true;
             return this;
         }
 
-        public List<Value> read() throws IOException {
+        public List<Value> read() throws IOException
+        {
             spark.conf().set(SQLConf$.MODULE$.PARQUET_WRITE_LEGACY_FORMAT().key(), isLegacyFormat);
 
             Dataset<Row> dataFrame = spark.createDataFrame(data, schema).repartition(1);
@@ -120,5 +132,4 @@ abstract public class SparkTestBase {
             return results;
         }
     }
-
 }

@@ -25,20 +25,23 @@ package org.embulk.input.parquet_hadoop;
  * hadoop jars is not in classpath of system class loader.
  * So we need to set context class loader to plugins' class loader.
  */
-class PluginClassLoaderScope implements AutoCloseable {
+class PluginClassLoaderScope implements AutoCloseable
+{
     private static final ClassLoader PLUGIN_CLASS_LOADER =
             ParquetHadoopInputPlugin.class.getClassLoader();
 
     private final ClassLoader original;
 
-    public PluginClassLoaderScope() {
+    public PluginClassLoaderScope()
+    {
         Thread current = Thread.currentThread();
         this.original = current.getContextClassLoader();
         Thread.currentThread().setContextClassLoader(PLUGIN_CLASS_LOADER);
     }
 
     @Override
-    public void close() {
+    public void close()
+    {
         Thread.currentThread().setContextClassLoader(original);
     }
 }

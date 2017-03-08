@@ -63,7 +63,8 @@ public class ConfigurationFactory
             try {
                 logger.trace("embulk-input-parquet_hadoop: load a config file: {}", f);
                 c.addResource(new File(f).toURI().toURL());
-            } catch (MalformedURLException e) {
+            }
+            catch (MalformedURLException e) {
                 throw new ConfigException(e);
             }
         }
