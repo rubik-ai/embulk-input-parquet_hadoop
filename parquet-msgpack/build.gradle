@@ -2,18 +2,6 @@ plugins {
     id "java"
 }
 
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-configurations {
-    provided
-}
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
 dependencies {
     compile 'org.msgpack:msgpack-core:0.8.11'
     provided 'org.msgpack:msgpack-core:0.8.11'

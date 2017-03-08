@@ -1,22 +1,4 @@
-plugins {
-    id "com.jfrog.bintray" version "1.6"
-    id "com.github.jruby-gradle.base" version "1.2.1"
-    id "java"
-    id "checkstyle"
-}
 import com.github.jrubygradle.JRubyExec
-repositories {
-    mavenCentral()
-    jcenter()
-}
-configurations {
-    provided
-}
-
-version = "0.1.0"
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
 
 dependencies {
     compile  "org.embulk:embulk-core:0.8.16"
@@ -34,30 +16,6 @@ dependencies {
     testCompile 'org.assertj:assertj-core:2.6.+'
 }
 
-task classpath(type: Copy, dependsOn: ["jar"]) {
-    doFirst { file("classpath").deleteDir() }
-    from (configurations.runtime - configurations.provided + files(jar.archivePath))
-    into "classpath"
-}
-clean { delete "classpath" }
-
-checkstyle {
-    configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
-    toolVersion = '6.14.1'
-}
-checkstyleMain {
-    configFile = file("${project.rootDir}/config/checkstyle/default.xml")
-    ignoreFailures = true
-}
-checkstyleTest {
-    configFile = file("${project.rootDir}/config/checkstyle/default.xml")
-    ignoreFailures = true
-}
-task checkstyle(type: Checkstyle) {
-    classpath = sourceSets.main.output + sourceSets.test.output
-    source = sourceSets.main.allJava + sourceSets.test.allJava
-}
-
 task gem(type: JRubyExec, dependsOn: ["gemspec", "classpath"]) {
     jrubyArgs "-rrubygems/gem_runner", "-eGem::GemRunner.new.run(ARGV)", "build"
     scriptArgs "${project.projectDir.absolutePath}/build/gemspec"
@@ -66,40 +24,30 @@ task gem(type: JRubyExec, dependsOn: ["gemspec", "classpath"]) {
 
 task gemPush(type: JRubyExec, dependsOn: ["gem"]) {
     jrubyArgs "-rrubygems/gem_runner", "-eGem::GemRunner.new.run(ARGV)", "push"
-    script "pkg/${project.name}-${project.version}.gem"
-}
-
-task "package"(dependsOn: ["gemspec", "classpath"]) {
-    doLast {
-        println "> Build succeeded."
-        println "> You can run embulk with '-L ${file(".").absolutePath}' argument."
-    }
+    scriptArgs "pkg/${project.name}-${project.version}.gem"
 }
 
 task gemspec {
-    ext.gemspecFile = file("${project.name}.gemspec")
-    inputs.file "build.gradle"
-    outputs.file gemspecFile
-    doLast { gemspecFile.write($/
+    doLast {
+        file('build').mkdirs()
+        file('build/gemspec').write($/
 Gem::Specification.new do |spec|
   spec.name          = "${project.name}"
   spec.version       = "${project.version}"
   spec.authors       = ["Koji AGAWA"]
-  spec.summary       = %[Parquet Hadoop input plugin for Embulk]
-  spec.description   = %[Loads records from Parquet Hadoop.]
+  spec.summary       = %[Parquet input plugin for Embulk]
+  spec.description   = %[Loads records from Parquet files via Hadoop FileSystem.]
   spec.email         = ["agawa_koji@cyberagent.co.jp"]
-  spec.licenses      = ["MIT"]
-  # TODO set this: spec.homepage      = "https://github.com/CyberAgent/adtech-indus-embulk-input-parquet_hadoop"
+  spec.licenses      = ["Apache 2.0"]
+  spec.homepage      = "https://github.com/CyberAgent/embulk-input-parquet_hadoop"
 
   spec.files         = `git ls-files`.split("\n") + Dir["classpath/*.jar"]
   spec.test_files    = spec.files.grep(%r"^(test|spec)/")
   spec.require_paths = ["lib"]
 
-  #spec.add_dependency 'YOUR_GEM_DEPENDENCY', ['~> YOUR_GEM_DEPENDENCY_VERSION']
   spec.add_development_dependency 'bundler', ['~> 1.0']
   spec.add_development_dependency 'rake', ['>= 10.0']
 end
 /$)
     }
 }
-clean { delete "${project.name}.gemspec" }
