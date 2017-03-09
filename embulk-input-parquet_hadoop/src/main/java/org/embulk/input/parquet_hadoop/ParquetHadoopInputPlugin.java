@@ -18,6 +18,7 @@ package org.embulk.input.parquet_hadoop;
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import jp.co.cyberagent.parquet.msgpack.read.MessagePackReadSupport;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -43,7 +44,6 @@ import org.embulk.spi.type.Types;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import studio.adtech.parquet.msgpack.read.MessagePackReadSupport;
 
 import javax.annotation.Nullable;
 
