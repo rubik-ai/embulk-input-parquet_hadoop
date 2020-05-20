@@ -47,6 +47,11 @@ in:
 $ ./gradlew gem  # -t to watch change of files and rebuild continuously
 ```
 
+## Install gem
+```
+$ embulk gem install <pkg/.gemfile>
+```
+
 ## Notes
 
 ### Why implement this as input plugin rather than parser plugin ?
